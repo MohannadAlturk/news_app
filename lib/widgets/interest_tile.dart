@@ -16,26 +16,24 @@ class InterestTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue[300] : Colors.lightBlue[100],
+          color: isSelected ? Colors.blue[200] : Colors.blue[50],
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            if (isSelected)
-              BoxShadow(
-                color: Colors.blue.withOpacity(0.5),
-                spreadRadius: 3,
-                blurRadius: 5,
-              ),
-          ],
+          border: Border.all(
+            color: isSelected ? Colors.blue : Colors.grey.shade200,
+            width: 2,
+          ),
         ),
         child: Center(
           child: Text(
             interest,
             style: const TextStyle(
               color: Colors.black,
-              fontSize: 18,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              fontFamily: "CupertinoSystemText"
             ),
           ),
         ),

@@ -6,7 +6,12 @@ class InterestsViewModel {
     'Technologie',
     'Gaming',
     'Beauty',
-    'Business'
+    'Business',
+    "Health",
+    "Krimi",
+    "Biznis",
+    "Hasbulla",
+    "Liste"
   ];
 
   // Track selected interests
