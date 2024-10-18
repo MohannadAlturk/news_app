@@ -33,4 +33,20 @@ class NewsApiService {
       throw Exception('Failed to fetch news');
     }
   }
+
+
+  // Fetch articles with pagination (limit of 20 articles per request)
+  Future<List<dynamic>> fetchArticles({String category = 'general', int page = 1}) async {
+    final url = Uri.parse('$_baseUrl/top-headlines?category=$category&pageSize=20&page=$page&apiKey=$apiKey');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      if (data['articles'] != null) {
+        return data['articles'];
+      }
+    }
+    throw Exception('Failed to fetch news');
+  }
 }
