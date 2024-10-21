@@ -66,7 +66,7 @@ class NewsViewModel extends ChangeNotifier {
     if (publishedAt != null) {
       try {
         DateTime dateTime = DateTime.parse(publishedAt);
-        return DateFormat('dd-MM-yyyy').format(dateTime);  // Format as DD-MM-YYYY
+        return DateFormat.yMMMMd().format(dateTime);  // Format date to "Month Day, Year"
       } catch (e) {
         return 'Invalid date';
       }

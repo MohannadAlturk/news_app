@@ -31,40 +31,61 @@ class NewsCard extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
+            const SizedBox(height: 10),
             if (article['description'] != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  article['description'] ?? 'No description available',
-                  style: const TextStyle(
-                    fontSize: 14,
+              Text(
+                article['description'] ?? 'No description available',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                ),
+              ),
+            const SizedBox(height: 12),
+
+            // Row for date, source, and favorite icon
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Expanded widget ensures the text doesn't overflow
+                Expanded(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          formattedDate,  // Display formatted date
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Flexible(
+                        child: Text(
+                          article['source']?['name'] ?? 'Unknown Source',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black54,
+                            overflow: TextOverflow.ellipsis,  // Truncate long text with ellipsis
+                          ),
+                          maxLines: 1,  // Ensure the text is on a single line
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Favorite icon on the right
+                IconButton(
+                  onPressed: () {
+                    // Add to favorites logic
+                  },
+                  icon: const Icon(
+                    Icons.favorite_border,
                     color: Colors.black54,
                   ),
                 ),
-              ),
-            Padding(
-              padding: const EdgeInsets.only(top: 12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '$formattedDate • ${article['source']['name'] ?? 'Unknown'}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      // Add to favorites logic here
-                    },
-                    icon: const Icon(
-                      Icons.favorite_border,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
           ],
         ),
