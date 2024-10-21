@@ -17,20 +17,12 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      // Scroll event is now handled in the Consumer
-      // Remove Provider access from here
-    }
   }
 
   @override
@@ -41,7 +33,7 @@ class _NewsScreenState extends State<NewsScreen> {
         appBar: AppBar(
           backgroundColor: Colors.blue,
           title: const Text(
-            'Deine Nachrichten',
+            'Your News',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -59,17 +51,12 @@ class _NewsScreenState extends State<NewsScreen> {
             return RefreshIndicator(
               onRefresh: () => viewModel.fetchNewsArticles(refresh: true),
               child: ListView.builder(
-                controller: _scrollController, // Attach the scroll controller here
+                controller: _scrollController,
                 padding: const EdgeInsets.all(8.0),
-                itemCount: viewModel.articles.length + 1, // Additional item for "Scrollen Sie nach unten für mehr"
+                itemCount: viewModel.articles.length + 1, // Include the button at the end
                 itemBuilder: (context, index) {
                   if (index == viewModel.articles.length) {
-                    // Handle scroll event for fetching more articles
-                    if (!viewModel.isFetchingMore && _scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-                      // Fetch more articles when user reaches the bottom
-                      viewModel.fetchMoreArticles();
-                    }
-
+                    // Add a "Load More" button at the bottom
                     return Column(
                       children: [
                         if (viewModel.isFetchingMore)
@@ -77,9 +64,12 @@ class _NewsScreenState extends State<NewsScreen> {
                         else
                           Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              'Scrollen Sie nach unten für mehr',
-                              style: TextStyle(color: Colors.grey[600]),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Fetch more articles when button is pressed
+                                viewModel.fetchMoreArticles();
+                              },
+                              child: const Text('Load More'), // "Load More"
                             ),
                           ),
                         const SizedBox(height: 80), // Padding to avoid being covered by the navbar
