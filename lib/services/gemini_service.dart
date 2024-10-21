@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';  // For loading API key from .env
 import 'package:google_generative_ai/google_generative_ai.dart';
 
