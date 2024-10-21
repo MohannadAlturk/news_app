@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '/view_models/news_viewmodel.dart';
 import '/widgets/news_card.dart';
 import '/widgets/bottom_navbar.dart';
+import 'article_detail_screen.dart';  // Import the article detail screen
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -79,7 +80,22 @@ class _NewsScreenState extends State<NewsScreen> {
 
                   final article = viewModel.articles[index];
                   final formattedDate = viewModel.formatDate(article['publishedAt']);
-                  return NewsCard(article: article, formattedDate: formattedDate);
+
+                  // Pass the entire article object to the detail screen
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to the ArticleDetailScreen when tapped, passing the entire article
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ArticleDetailScreen(
+                            article: article,  // Pass the full article object
+                          ),
+                        ),
+                      );
+                    },
+                    child: NewsCard(article: article, formattedDate: formattedDate),
+                  );
                 },
               ),
             );
