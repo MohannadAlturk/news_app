@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/screens/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Add dotenv package
+import 'screens/news_screen.dart';
 
 Future<void> main() async {
+   print('Loading .env file...');
+  await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
