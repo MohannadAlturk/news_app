@@ -5,10 +5,10 @@ class LoginRegisterButtonWidget extends StatelessWidget {
   final VoidCallback onPressed;
 
   const LoginRegisterButtonWidget({
-    Key? key,
+    super.key,
     required this.isLogin,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

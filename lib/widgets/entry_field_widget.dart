@@ -5,10 +5,10 @@ class EntryFieldWidget extends StatelessWidget {
   final TextEditingController controller;
 
   const EntryFieldWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

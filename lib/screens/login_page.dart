@@ -9,11 +9,8 @@ import 'package:news_app/screens/register_page.dart';
 import 'package:news_app/screens/forgot_password_page.dart';
 import 'package:news_app/screens/home_page.dart';
 
-import '../widgets/TitleLabelWidget.dart';
-
-
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -24,21 +21,73 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
 
-  Future<void> signInWithEmailAndPassword() async {
+  Future<void> _signIn() async {
     try {
       await Auth().signInWithEmailAndPassword(
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
       });
     }
+  }
+
+  Widget _buildForgotPasswordButton() {
+    return TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+        );
+      },
+      child: const Text('Forgot Password?'),
+    );
+  }
+
+  Widget _buildRegisterInsteadButton() {
+    return TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const RegisterPage()),
+        );
+      },
+      child: const Text('Register instead'),
+    );
+  }
+
+  Widget _buildForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        const TitleWidget(title: 'Login'),
+        const SizedBox(height: 20),
+        EntryFieldWidget(
+          title: 'Email',
+          controller: _controllerEmail,
+        ),
+        EntryFieldWidget(
+          title: 'Password',
+          controller: _controllerPassword,
+        ),
+        ErrorMessageWidget(errorMessage: errorMessage),
+        SubmitButtonWidget(
+          isLogin: true,
+          onPressed: _signIn,
+        ),
+        _buildForgotPasswordButton(),
+        _buildRegisterInsteadButton(),
+      ],
+    );
   }
 
   @override
@@ -51,45 +100,7 @@ class _LoginPageState extends State<LoginPage> {
         height: double.infinity,
         width: double.infinity,
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const TitleLabelWidget(label: 'Login'),
-            const SizedBox(height: 20),
-            EntryFieldWidget(
-              title: 'email',
-              controller: _controllerEmail,
-            ),
-            EntryFieldWidget(
-              title: 'password',
-              controller: _controllerPassword,
-            ),
-            ErrorMessageWidget(errorMessage: errorMessage),
-            SubmitButtonWidget(
-              isLogin: true,
-              onPressed: signInWithEmailAndPassword,
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                );
-              },
-              child: const Text('Forgot Password?'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RegisterPage()),
-                );
-              },
-              child: const Text('Register instead'),
-            ),
-          ],
-        ),
+        child: _buildForm(),
       ),
     );
   }

@@ -4,26 +4,33 @@ import 'package:flutter/material.dart';
 import '../widgets/title_widget.dart';
 import 'login_page.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
 
-  Future<void> signOut(BuildContext context) async {
+  Future<void> signOut() async {
     await Auth().signOut();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
   }
 
   Widget _userUid() {
     return Text(user?.email ?? 'User email');
   }
 
-  Widget _signOutButton(BuildContext context) {
+  Widget _signOutButton() {
     return ElevatedButton(
-      onPressed: () => signOut(context),
+      onPressed: signOut,
       child: const Text('SignOut'),
     );
   }
@@ -43,7 +50,7 @@ class HomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             _userUid(),
-            _signOutButton(context),
+            _signOutButton(),
           ],
         ),
       ),

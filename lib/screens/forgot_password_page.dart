@@ -6,7 +6,7 @@ import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/message_widget.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+  const ForgotPasswordPage({super.key});
 
   @override
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
