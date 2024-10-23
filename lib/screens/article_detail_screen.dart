@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/article_detail_viewmodel.dart';
-import '../widgets/bottom_navbar.dart'; // Import the bottom navbar widget
+import '../widgets/bottom_navbar.dart';
 import 'package:intl/intl.dart'; // For formatting the date
+import 'full_article_webview.dart';  // Import the web view screen
 
 class ArticleDetailScreen extends StatelessWidget {
   final Map<String, dynamic> article; // Pass the full article object with the URL
@@ -101,6 +102,22 @@ class ArticleDetailScreen extends StatelessWidget {
                         fontSize: 20,
                         fontStyle: FontStyle.italic,
                       ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // "Read more" button to navigate to the web view screen
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FullArticleWebView(
+                              articleUrl: article['url'],  // Pass the article URL to the web view
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text('Read more'),
                     ),
                   ],
                 ),
