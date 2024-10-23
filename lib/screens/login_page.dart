@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:news_app/screens/news_screen.dart';
 import 'package:news_app/services/auth.dart';
 import 'package:news_app/widgets/title_widget.dart';
 import 'package:news_app/widgets/entry_field_widget.dart';
@@ -7,7 +8,6 @@ import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/submit_button_widget.dart';
 import 'package:news_app/screens/register_page.dart';
 import 'package:news_app/screens/forgot_password_page.dart';
-import 'package:news_app/screens/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const NewsScreen()),
         );
       }
     } on FirebaseAuthException catch (e) {
