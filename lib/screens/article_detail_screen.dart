@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../view_models/article_detail_viewmodel.dart';
 import '../widgets/bottom_navbar.dart';
 import 'package:intl/intl.dart'; // For formatting the date
@@ -29,7 +30,12 @@ class ArticleDetailScreen extends StatelessWidget {
       create: (_) => ArticleDetailViewModel()..fetchAndSummarizeArticle(article['url']),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(article['title']),  // Display the article's title
+          title: Text(article['title'],
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),  // Display the article's title
+          backgroundColor: Colors.blue,  // Set the app bar color to blue
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -105,19 +111,46 @@ class ArticleDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    // "Read more" button to navigate to the web view screen
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FullArticleWebView(
-                              articleUrl: article['url'],  // Pass the article URL to the web view
-                            ),
+                    // Display the buttons side by side
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Align the buttons
+                      children: [
+                        // "Read more" button
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FullArticleWebView(
+                                  articleUrl: article['url'],  // Pass the article URL to the web view
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,  // Button color set to blue
                           ),
-                        );
-                      },
-                      child: const Text('Read more'),
+                          child: const Text('Read more',
+                              style: TextStyle(
+                                color: Colors.white,
+                              )),
+                        ),
+
+                        // "Share" button
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Share.share('Check this out: ${article['title']} - ${article['url']} - Sent with NewsAI');
+                          },
+                          icon: const Icon(Icons.share, color: Colors.white),
+                          label: const Text('Share',
+                              style: TextStyle(
+                                color: Colors.white,
+                              )),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,  // Button color set to blue
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
