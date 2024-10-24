@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:news_app/screens/news_screen.dart';
+import 'package:news_app/screens/interests_screen.dart';
 import 'package:news_app/services/auth.dart';
 import 'package:news_app/widgets/title_widget.dart';
 import 'package:news_app/widgets/entry_field_widget.dart';
@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const NewsScreen()),
+          MaterialPageRoute(builder: (context) => const InterestsScreen()),
         );
       }
     } on FirebaseAuthException catch (e) {
