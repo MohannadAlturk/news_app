@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/screens/news_screen.dart';
 import '../widgets/interest_tile.dart';
 import '../view_models/interests_view_model.dart';
 
@@ -25,7 +26,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
             title: Column(
               children: [
                 const Text(
-                  'Wähle deine Interessen aus',
+                  'What are your interests?',
                   style: TextStyle(
                     fontSize: 24,
                     fontFamily: "CupertinoSystemText",
@@ -35,7 +36,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  'Du kannst sie jederzeit in den Einstellungen ändern.',
+                  'You can change them anytime in settings.',
                   style: TextStyle(
                     fontSize: 14,
                     fontFamily: "CupertinoSystemText",
@@ -71,17 +72,20 @@ class _InterestsScreenState extends State<InterestsScreen> {
           width: double.infinity,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(vertical: 15),
               backgroundColor: Colors.blue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
             onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NewsScreen()));
               print('Selected interests: ${viewModel.selectedInterests}');
             },
             child: const Text(
-              'Weiter',
+              'Save',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

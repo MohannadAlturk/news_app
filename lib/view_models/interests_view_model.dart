@@ -1,17 +1,13 @@
 class InterestsViewModel {
   // List of interests
   List<String> interests = [
-    'Politik',
-    'Informatik',
-    'Technologie',
-    'Gaming',
-    'Beauty',
     'Business',
-    "Health",
-    "Krimi",
-    "Biznis",
-    "Hasbulla",
-    "Liste"
+    'Entertainment',
+    'General',
+    'Health',
+    'Science',
+    'Sports',
+    "Technology"
   ];
 
   // Track selected interests
