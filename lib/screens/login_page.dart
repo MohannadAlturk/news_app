@@ -9,6 +9,8 @@ import 'package:news_app/widgets/submit_button_widget.dart';
 import 'package:news_app/screens/register_page.dart';
 import 'package:news_app/screens/forgot_password_page.dart';
 
+import 'news_screen.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -27,11 +29,23 @@ class _LoginPageState extends State<LoginPage> {
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const InterestsScreen()),
-        );
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        bool isFirstSignIn = user.metadata.creationTime == user.metadata.lastSignInTime;
+        if (mounted) {
+          if (isFirstSignIn) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const InterestsScreen()),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const NewsScreen()),
+            );
+          }
+        }
       }
     } on FirebaseAuthException catch (e) {
       setState(() {

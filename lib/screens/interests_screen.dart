@@ -85,11 +85,17 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              try {
+                await viewModel.saveInterestsToFirestore();
+                print('Interests saved to Firestore: ${viewModel.selectedInterests}');
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const NewsScreen()));
-              print('Selected interests: ${viewModel.selectedInterests}');
+                  MaterialPageRoute(builder: (context) => const NewsScreen()),
+                );
+              } catch (e) {
+                print('Error saving interests: $e');
+              }
             },
             child: const Text(
               'Save',
