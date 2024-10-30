@@ -30,14 +30,21 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const TitleWidget(title: 'News App'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Center(
+          child: TitleWidget(title: 'News App'),
+        ),
         automaticallyImplyLeading: false,
       ),
       body: Container(
+        color: Colors.white,
         height: double.infinity,
         width: double.infinity,
         padding: const EdgeInsets.all(20),
@@ -45,6 +52,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const TitleWidget(title: 'Forgot Password'),
+            const SizedBox(height: 20),
             EntryFieldWidget(
               title: 'Email',
               controller: _controllerEmail,

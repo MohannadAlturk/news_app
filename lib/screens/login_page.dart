@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 1,
+        elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Center(
           child: TitleWidget(title: 'News App'),

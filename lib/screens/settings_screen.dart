@@ -3,6 +3,7 @@ import 'package:news_app/screens/interests_screen.dart';
 import 'package:news_app/screens/login_page.dart';
 import 'package:news_app/services/auth.dart';
 import 'package:news_app/widgets/bottom_navbar.dart';
+import 'change_password_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -45,6 +46,21 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
             ListTile(
+              title: const Text('Change Password', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              leading: const Icon(Icons.lock, color: Colors.blue),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Delete Account', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              leading: const Icon(Icons.delete, color: Colors.red),
+              onTap: () => _showDeleteAccountDialog(context),
+            ),
+            ListTile(
               title: const Text('Sign Out', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               leading: const Icon(Icons.logout, color: Colors.blue),
               onTap: () => _showSignOutDialog(context),
@@ -77,6 +93,43 @@ class SettingsScreen extends StatelessWidget {
               );
             },
             child: const Text("Sign Out"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete Account"),
+        content: const Text("Are you sure you want to delete your account? This action cannot be undone."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await Auth().deleteUser();
+                Navigator.popUntil(context, (route) => route.isFirst); // Clear stack after account deletion
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Account deleted successfully.")),
+                );
+              } catch (e) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Failed to delete account: $e")),
+                );
+              }
+            },
+            child: const Text("Delete"),
           ),
         ],
       ),

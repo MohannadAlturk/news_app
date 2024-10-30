@@ -100,7 +100,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 1,
+        elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
         centerTitle: true,
         title: const TitleWidget(title: 'News App'), // Centered title

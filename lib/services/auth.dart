@@ -17,7 +17,6 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      // Throw the specific FirebaseAuthException, to handle it directly in the UI.
       throw e;
     }
   }
@@ -32,7 +31,6 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      // Throw the specific FirebaseAuthException, to handle it directly in the UI.
       throw e;
     }
   }
@@ -41,6 +39,30 @@ class Auth {
     try {
       await _firebaseAuth.signOut();
     } on FirebaseAuthException catch (e) {
+      throw e;
+    }
+  }
+
+  Future<void> deleteUser() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user != null) {
+        // You may need to reauthenticate the user before deletion.
+        await user.delete();
+      } else {
+        throw FirebaseAuthException(
+          code: 'no-current-user',
+          message: 'No user is currently signed in.',
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      // Reauthentication may be required to delete the account.
+      if (e.code == 'requires-recent-login') {
+        throw FirebaseAuthException(
+          code: 'requires-recent-login',
+          message: 'Please reauthenticate and try again.',
+        );
+      }
       throw e;
     }
   }
