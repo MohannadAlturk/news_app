@@ -101,7 +101,7 @@ class _NewsScreenState extends State<NewsScreen> {
             );
           },
         ),
-        bottomNavigationBar: const BottomNavBar(),
+        bottomNavigationBar: const BottomNavBar(currentIndex: 0),
       ),
     );
   }

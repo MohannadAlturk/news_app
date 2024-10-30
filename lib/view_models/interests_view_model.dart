@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/services/firestore_service.dart';
 
-class InterestsViewModel {
+class InterestsViewModel extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
-  // List of interests with associated icons
   final List<Map<String, dynamic>> interests = [
     {'title': 'Business', 'icon': Icons.business},
     {'title': 'Entertainment', 'icon': Icons.movie},
@@ -14,16 +13,15 @@ class InterestsViewModel {
     {'title': 'Technology', 'icon': Icons.computer},
   ];
 
-  // Track selected interests
   List<String> selectedInterests = [];
 
-  // Toggle interest selection
   void toggleInterest(String interest) {
     if (selectedInterests.contains(interest)) {
       selectedInterests.remove(interest);
     } else {
       selectedInterests.add(interest);
     }
+    notifyListeners();
   }
 
   Future<void> saveInterestsToFirestore() async {
@@ -32,5 +30,6 @@ class InterestsViewModel {
 
   Future<void> loadInterestsFromFirestore() async {
     selectedInterests = await _firestoreService.getUserInterests();
+    notifyListeners();
   }
 }
