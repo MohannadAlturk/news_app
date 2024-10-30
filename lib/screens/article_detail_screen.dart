@@ -3,17 +3,39 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../view_models/article_detail_viewmodel.dart';
 import '../widgets/bottom_navbar.dart';
-import '../widgets/text_to_speech_bar.dart';  // Import the new TTS Bar
+import '../widgets/text_to_speech_bar.dart';
+import '../services/text_to_speech_service.dart';  // Import the TTS service
 import 'package:intl/intl.dart';
 import 'full_article_webview.dart';
 
-class ArticleDetailScreen extends StatelessWidget {
+class ArticleDetailScreen extends StatefulWidget {
   final Map<String, dynamic> article;
 
   const ArticleDetailScreen({
     super.key,
     required this.article,
   });
+
+  @override
+  _ArticleDetailScreenState createState() => _ArticleDetailScreenState();
+}
+
+class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
+  late TextToSpeechService _ttsService;
+
+  @override
+  void initState() {
+    super.initState();
+    _ttsService = TextToSpeechService();
+  }
+
+  @override
+  void dispose() {
+    // Stop TTS when exiting the screen
+    _ttsService.stop();
+    _ttsService.dispose();
+    super.dispose();
+  }
 
   String _formatDate(String? dateStr) {
     if (dateStr == null || dateStr.isEmpty) return "Unknown Date";
@@ -30,11 +52,11 @@ class ArticleDetailScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) =>
       ArticleDetailViewModel()
-        ..fetchAndSummarizeArticle(article['url']),
+        ..fetchAndSummarizeArticle(widget.article['url']),
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            article['title'],
+            widget.article['title'],
             style: const TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.blue,
@@ -51,15 +73,15 @@ class ArticleDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (article['urlToImage'] != null &&
-                        article['urlToImage'].isNotEmpty)
+                    if (widget.article['urlToImage'] != null &&
+                        widget.article['urlToImage'].isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
                         child: Image.network(
-                          article['urlToImage'],
+                          widget.article['urlToImage'],
                           height: 200,
                           width: double.infinity,
-                          fit: BoxFit.cover,  // Ensure the image fits the width properly
+                          fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return const Text(
                               'Image not available',
@@ -70,7 +92,7 @@ class ArticleDetailScreen extends StatelessWidget {
                       ),
                     const SizedBox(height: 20),
                     Text(
-                      article['title'],
+                      widget.article['title'],
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                     ),
@@ -79,12 +101,12 @@ class ArticleDetailScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _formatDate(article['publishedAt']),
+                          _formatDate(widget.article['publishedAt']),
                           style: const TextStyle(
                               fontSize: 14, color: Colors.grey),
                         ),
                         Text(
-                          article['source']?['name'] ?? 'Unknown Source',
+                          widget.article['source']?['name'] ?? 'Unknown Source',
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -111,7 +133,7 @@ class ArticleDetailScreen extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) =>
                                     FullArticleWebView(
-                                      articleUrl: article['url'],
+                                      articleUrl: widget.article['url'],
                                     ),
                               ),
                             );
@@ -126,7 +148,7 @@ class ArticleDetailScreen extends StatelessWidget {
                         ElevatedButton.icon(
                           onPressed: () {
                             Share.share(
-                                'Check this out: ${article['title']} - ${article['url']} - Sent with NewsAI');
+                                'Check this out: ${widget.article['title']} - ${widget.article['url']} - Sent with NewsAI');
                           },
                           icon: const Icon(Icons.share, color: Colors.white),
                           label: const Text(
@@ -140,14 +162,18 @@ class ArticleDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    if (viewModel.summary.isNotEmpty) const TextToSpeechBar(),
+                    if (viewModel.summary.isNotEmpty)
+                      TextToSpeechBar(
+                        text: viewModel.summary,
+                        ttsService: _ttsService,
+                      ),
                   ],
                 ),
               );
             },
           ),
         ),
-        bottomNavigationBar: const BottomNavBar(), // Add the bottom navbar
+        bottomNavigationBar: const BottomNavBar(currentIndex: 0,),
       ),
     );
   }

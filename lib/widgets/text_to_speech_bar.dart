@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../view_models/article_detail_viewmodel.dart';
+import '../services/text_to_speech_service.dart';
 
 class TextToSpeechBar extends StatefulWidget {
-  const TextToSpeechBar({super.key});
+  final String text;
+  final TextToSpeechService ttsService;
+
+  const TextToSpeechBar({
+    super.key,
+    required this.text,
+    required this.ttsService,
+  });
 
   @override
   _TextToSpeechBarState createState() => _TextToSpeechBarState();
@@ -11,23 +17,37 @@ class TextToSpeechBar extends StatefulWidget {
 
 class _TextToSpeechBarState extends State<TextToSpeechBar> {
   double _progress = 0.0;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    // Set up progress handler
-    final viewModel = Provider.of<ArticleDetailViewModel>(context, listen: false);
-    viewModel.ttsService.setOnProgressHandler((progress) {
+    widget.ttsService.setOnProgressHandler((progress) {
       setState(() {
         _progress = progress;
       });
     });
   }
 
+  void _togglePlayPause() async {
+    if (_isPlaying && !widget.ttsService.isPaused) {
+      await widget.ttsService.pause();
+    } else if (widget.ttsService.isPaused) {
+      await widget.ttsService.resume();
+    } else {
+      setState(() {
+        _progress = 0.0;
+      });
+      await widget.ttsService.speak(widget.text);
+    }
+
+    setState(() {
+      _isPlaying = widget.ttsService.isPlaying || widget.ttsService.isPaused;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<ArticleDetailViewModel>(context);
-
     return Column(
       children: [
         LinearProgressIndicator(
@@ -40,13 +60,15 @@ class _TextToSpeechBarState extends State<TextToSpeechBar> {
           children: [
             IconButton(
               icon: Icon(
-                viewModel.isPlaying ? Icons.stop : Icons.play_arrow,
+                _isPlaying && !widget.ttsService.isPaused ? Icons.pause : Icons.play_arrow,
                 color: Colors.blue,
               ),
-              onPressed: viewModel.toggleTTS,
+              onPressed: _togglePlayPause,
             ),
             Text(
-              viewModel.isPlaying ? 'Playing...' : 'Paused',
+              _isPlaying
+                  ? (widget.ttsService.isPaused ? 'Paused' : 'Playing...')
+                  : 'Stopped',
               style: const TextStyle(color: Colors.blue),
             ),
           ],
@@ -57,8 +79,8 @@ class _TextToSpeechBarState extends State<TextToSpeechBar> {
 
   @override
   void dispose() {
-    final viewModel = Provider.of<ArticleDetailViewModel>(context, listen: false);
-    viewModel.ttsService.setOnProgressHandler(null); // Safely handles null
+    widget.ttsService.stop();
+    widget.ttsService.setOnProgressHandler(null);
     super.dispose();
   }
 }
