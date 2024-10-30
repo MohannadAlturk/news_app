@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/screens/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // Add dotenv package
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:news_app/screens/login_page.dart';
+import 'package:news_app/screens/news_screen.dart';
 
 Future<void> main() async {
   print('Loading .env file...');
@@ -11,9 +13,17 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  Future<Widget> _getInitialScreen() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return const NewsScreen();
+    } else {
+      return const LoginPage();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +32,21 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(),
+      home: FutureBuilder<Widget>(
+        future: _getInitialScreen(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          } else if (snapshot.hasData) {
+            return snapshot.data!;
+          } else {
+            return const LoginPage();
+          }
+        },
+      ),
     );
   }
 }
+

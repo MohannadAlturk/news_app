@@ -18,6 +18,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   String? errorMessage = '';
+  bool _isPasswordVisible = false;
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
 
@@ -78,6 +79,17 @@ class _LoginPageState extends State<LoginPage> {
         EntryFieldWidget(
           title: 'Password',
           controller: _controllerPassword,
+          obscureText: !_isPasswordVisible,
+          suffixIcon: IconButton(
+            icon: Icon(
+              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+            ),
+            onPressed: () {
+              setState(() {
+                _isPasswordVisible = !_isPasswordVisible;
+              });
+            },
+          ),
         ),
         ErrorMessageWidget(errorMessage: errorMessage),
         SubmitButtonWidget(
