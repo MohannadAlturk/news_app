@@ -59,7 +59,7 @@ class ArticleDetailScreen extends StatelessWidget {
                           article['urlToImage'],
                           height: 200,
                           width: double.infinity,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.cover,  // Ensure the image fits the width properly
                           errorBuilder: (context, error, stackTrace) {
                             return const Text(
                               'Image not available',
@@ -147,7 +147,7 @@ class ArticleDetailScreen extends StatelessWidget {
             },
           ),
         ),
-        bottomNavigationBar: const BottomNavBar(),
+        bottomNavigationBar: const BottomNavBar(), // Add the bottom navbar
       ),
     );
   }
