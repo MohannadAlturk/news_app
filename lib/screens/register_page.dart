@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:news_app/screens/interests_screen.dart';
 import 'package:news_app/services/auth.dart';
 import 'package:news_app/widgets/title_widget.dart';
 import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/submit_button_widget.dart';
-import 'package:news_app/screens/login_page.dart';
+import 'package:news_app/screens/news_screen.dart';
+
+import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -25,15 +28,33 @@ class _RegisterPageState extends State<RegisterPage> {
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
-      if (mounted) {
+
+      final interestsSelected = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const InterestsScreen()),
+      );
+
+      if (interestsSelected == true && mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
+          MaterialPageRoute(builder: (context) => const NewsScreen()),
         );
       }
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.message;
+        switch (e.code) {
+          case 'email-already-in-use':
+            errorMessage = 'An account already exists for this email.';
+            break;
+          case 'invalid-email':
+            errorMessage = 'The email address is badly formatted.';
+            break;
+          case 'weak-password':
+            errorMessage = 'The password is too weak.';
+            break;
+          default:
+            errorMessage = 'Registration failed. Please try again.';
+        }
       });
     }
   }
@@ -46,7 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       },
-      child: const Text('Login instead'),
+      child: const Text('Login instead', style: TextStyle(color: Colors.blue)),
     );
   }
 
@@ -62,6 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
         EntryFieldWidget(
           title: 'Password',
           controller: _controllerPassword,
+          obscureText: true,
         ),
         ErrorMessageWidget(errorMessage: errorMessage),
         SubmitButtonWidget(
@@ -77,13 +99,20 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const TitleWidget(title: 'News App'),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        iconTheme: const IconThemeData(color: Colors.black),
+        centerTitle: true,
+        title: const TitleWidget(title: 'News App'), // Centered title
+        automaticallyImplyLeading: false,
       ),
       body: Container(
-        height: double.infinity,
-        width: double.infinity,
+        color: Colors.white,
+        alignment: Alignment.center,
         padding: const EdgeInsets.all(20),
-        child: _buildForm(),
+        child: SingleChildScrollView(
+          child: _buildForm(),
+        ),
       ),
     );
   }

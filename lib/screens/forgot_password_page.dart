@@ -35,6 +35,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     return Scaffold(
       appBar: AppBar(
         title: const TitleWidget(title: 'News App'),
+        automaticallyImplyLeading: false,
       ),
       body: Container(
         height: double.infinity,
@@ -45,7 +46,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             EntryFieldWidget(
-              title: 'email',
+              title: 'Email',
               controller: _controllerEmail,
             ),
             MessageWidget(message: message),
@@ -53,6 +54,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ElevatedButton(
               onPressed: resetPassword,
               child: const Text('Reset Password'),
+            ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to the previous screen (Login screen)
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.blue),
+              ),
             ),
           ],
         ),

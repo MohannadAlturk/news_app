@@ -158,7 +158,7 @@ class ArticleDetailScreen extends StatelessWidget {
             },
           ),
         ),
-        bottomNavigationBar: const BottomNavBar(), // Add the bottom navbar
+        bottomNavigationBar: const BottomNavBar(currentIndex: 0), // Add the bottom navbar
       ),
     );
   }

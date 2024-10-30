@@ -17,8 +17,8 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      // Handle error or rethrow it for further handling
-      throw Exception('Sign in failed: ${e.message}');
+      // Throw the specific FirebaseAuthException, to handle it directly in the UI.
+      throw e;
     }
   }
 
@@ -32,8 +32,8 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      // Handle error or rethrow it for further handling
-      throw Exception('Registration failed: ${e.message}');
+      // Throw the specific FirebaseAuthException, to handle it directly in the UI.
+      throw e;
     }
   }
 
@@ -41,8 +41,7 @@ class Auth {
     try {
       await _firebaseAuth.signOut();
     } on FirebaseAuthException catch (e) {
-      // Handle error or rethrow it for further handling
-      throw Exception('Sign out failed: ${e.message}');
+      throw e;
     }
   }
 }
