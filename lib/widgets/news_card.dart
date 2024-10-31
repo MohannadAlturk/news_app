@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class NewsCard extends StatelessWidget {
   final Map<String, dynamic> article;
   final String formattedDate;
+  final String category; // New parameter for category
 
   const NewsCard({
     super.key,
     required this.article,
     required this.formattedDate,
+    required this.category, // Initialize category
   });
 
   @override
@@ -23,6 +25,17 @@ class NewsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Display category label
+            Text(
+              category, // Display category
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent, // Style for category
+              ),
+            ),
+            const SizedBox(height: 5),
+            // Title of the article
             Text(
               article['title'] ?? 'No Title',
               style: const TextStyle(
@@ -41,18 +54,16 @@ class NewsCard extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: 12),
-
             // Row for date, source, and favorite icon
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Expanded widget ensures the text doesn't overflow
                 Expanded(
                   child: Row(
                     children: [
                       Flexible(
                         child: Text(
-                          formattedDate,  // Display formatted date
+                          formattedDate,
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.black54,
@@ -66,16 +77,14 @@ class NewsCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.black54,
-                            overflow: TextOverflow.ellipsis,  // Truncate long text with ellipsis
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,  // Ensure the text is on a single line
+                          maxLines: 1,
                         ),
                       ),
                     ],
                   ),
                 ),
-
-                // Favorite icon on the right
                 IconButton(
                   onPressed: () {
                     // Add to favorites logic

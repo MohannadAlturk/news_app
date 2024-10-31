@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -34,19 +35,38 @@ class NewsApiService {
     }
   }
 
-
-  // Fetch articles with pagination (limit of 20 articles per request)
-  Future<List<dynamic>> fetchArticles({String category = 'general', int page = 1}) async {
+  // Fetch articles for a single category with pagination
+  Future<List<dynamic>> fetchArticlesByCategory(String category, {int page = 1}) async {
     final url = Uri.parse('$_baseUrl/top-headlines?category=$category&pageSize=20&page=$page&apiKey=$apiKey');
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      if (data['articles'] != null) {
-        return data['articles'];
-      }
+      final List<dynamic> articles = data['articles'] ?? [];
+
+      // Add the category to each article
+      return articles.map((article) {
+        article['category'] = category;
+        return article;
+      }).toList();
+    } else {
+      throw Exception('Failed to fetch news');
     }
-    throw Exception('Failed to fetch news');
   }
+
+  // Fetch articles for multiple categories (interests) and shuffle them
+  Future<List<dynamic>> fetchArticlesForInterests(List<String> interests, {int page = 1}) async {
+    List<dynamic> allArticles = [];
+
+    for (String interest in interests) {
+      final articles = await fetchArticlesByCategory(interest, page: page);
+      allArticles.addAll(articles);
+    }
+
+    // Shuffle the articles to randomize the order
+    allArticles.shuffle(Random());
+    return allArticles;
+  }
+
 }
