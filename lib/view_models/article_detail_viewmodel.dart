@@ -6,7 +6,7 @@ import '../services/text_to_speech_service.dart';
 
 class ArticleDetailViewModel extends ChangeNotifier {
   final GeminiService _geminiService = GeminiService();
-  final TextToSpeechService ttsService = TextToSpeechService();
+  final TextToSpeechService ttsService;
 
   String _summary = '';
   bool _isLoading = true;
@@ -18,21 +18,18 @@ class ArticleDetailViewModel extends ChangeNotifier {
   bool get isPlaying => _isPlaying;
   double get ttsProgress => _ttsProgress;
 
-  ArticleDetailViewModel() {
-    // Set up TTS progress handler
+  ArticleDetailViewModel(this.ttsService) {
     ttsService.setOnProgressHandler((progress) {
       _ttsProgress = progress;
       notifyListeners();
     });
   }
 
-  // Fetch and summarize the article content
   Future<void> fetchAndSummarizeArticle(String articleUrl) async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      // Scrape and summarize article
       final scrapedContent = await _scrapeArticleContent(articleUrl);
       _summary = await _geminiService.summarizeArticle(scrapedContent) ?? 'No summary available.';
     } catch (error) {
@@ -44,11 +41,10 @@ class ArticleDetailViewModel extends ChangeNotifier {
     }
   }
 
-  // Toggle TTS playback
-  void toggleTTS() async {
+  Future<void> toggleTTS() async {
     if (_isPlaying) {
       await ttsService.stop();
-      _ttsProgress = 0.0; // Reset progress when stopped
+      _ttsProgress = 0.0; // Reset progress on stop
     } else if (_summary.isNotEmpty) {
       await ttsService.speak(_summary);
     }
@@ -56,7 +52,6 @@ class ArticleDetailViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Helper function to scrape article content from the URL
   Future<String> _scrapeArticleContent(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
@@ -76,7 +71,7 @@ class ArticleDetailViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    ttsService.dispose();
+    ttsService.setOnProgressHandler(null); // Remove progress handler
     super.dispose();
   }
 }

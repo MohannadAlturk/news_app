@@ -3,10 +3,10 @@ import 'package:flutter_tts/flutter_tts.dart';
 class TextToSpeechService {
   final FlutterTts _flutterTts = FlutterTts();
   Function(double)? onProgress;
+  String? _originalText;
+  int _lastEndPosition = 0; // Tracks last known position
   bool isPaused = false;
   bool isPlaying = false;
-  String? _remainingText;
-  int _textLength = 0;  // Track the full length of the text
 
   TextToSpeechService() {
     _flutterTts.setLanguage("en-US");
@@ -22,14 +22,14 @@ class TextToSpeechService {
     _flutterTts.setCompletionHandler(() {
       isPlaying = false;
       isPaused = false;
-      _remainingText = null;
-      if (onProgress != null) onProgress!(1.0);  // Completion progress at 100%
+      _resetProgress();
+      if (onProgress != null) onProgress!(1.0); // Completion at 100%
     });
 
     _flutterTts.setCancelHandler(() {
       isPlaying = false;
       isPaused = false;
-      _remainingText = null;
+      _resetProgress();
     });
 
     _flutterTts.setPauseHandler(() {
@@ -42,26 +42,32 @@ class TextToSpeechService {
       isPaused = false;
     });
 
-    // Update progress based on the portion of the text spoken
     _flutterTts.setProgressHandler((String text, int start, int end, String word) {
-      if (onProgress != null && _textLength > 0) {
-        double progress = end / _textLength;  // Use the original text length
+      _lastEndPosition = end;
+      if (onProgress != null && _originalText != null) {
+        double progress = end / _originalText!.length;
         onProgress!(progress);
       }
-      _remainingText = text.substring(end);
     });
   }
 
   Future<void> speak(String text) async {
+    _originalText = text;
+    _lastEndPosition = 0; // Reset start position on new speak
+    await _speakFromPosition();
     isPlaying = true;
     isPaused = false;
-    _remainingText = text;
-    _textLength = text.length;  // Store text length for consistent progress tracking
-    await _flutterTts.speak(text);
+  }
+
+  Future<void> _speakFromPosition() async {
+    if (_originalText != null) {
+      String remainingText = _originalText!.substring(_lastEndPosition);
+      await _flutterTts.speak(remainingText);
+    }
   }
 
   Future<void> pause() async {
-    if (isPlaying) {
+    if (isPlaying && !isPaused) {
       await _flutterTts.pause();
       isPaused = true;
       isPlaying = false;
@@ -69,8 +75,8 @@ class TextToSpeechService {
   }
 
   Future<void> resume() async {
-    if (isPaused && _remainingText != null) {
-      await _flutterTts.speak(_remainingText!);
+    if (isPaused) {
+      await _speakFromPosition(); // Resume from last known position
       isPlaying = true;
       isPaused = false;
     }
@@ -80,7 +86,12 @@ class TextToSpeechService {
     await _flutterTts.stop();
     isPlaying = false;
     isPaused = false;
-    _remainingText = null;
+    _resetProgress();
+  }
+
+  void _resetProgress() {
+    _lastEndPosition = 0;
+    onProgress?.call(0.0);
   }
 
   void setOnProgressHandler(Function(double)? handler) {

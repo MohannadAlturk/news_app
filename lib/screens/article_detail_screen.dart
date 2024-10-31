@@ -1,58 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import '../services/text_to_speech_service.dart';
 import '../view_models/article_detail_viewmodel.dart';
 import '../widgets/bottom_navbar.dart';
 import '../widgets/text_to_speech_bar.dart';
-import '../services/text_to_speech_service.dart';  // Import the TTS service
 import 'package:intl/intl.dart';
 import 'full_article_webview.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
   final Map<String, dynamic> article;
 
-  const ArticleDetailScreen({
-    super.key,
-    required this.article,
-  });
+  const ArticleDetailScreen({super.key, required this.article});
 
   @override
   _ArticleDetailScreenState createState() => _ArticleDetailScreenState();
 }
 
 class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
-  late TextToSpeechService _ttsService;
-
-  @override
-  void initState() {
-    super.initState();
-    _ttsService = TextToSpeechService();
-  }
-
-  @override
-  void dispose() {
-    // Stop TTS when exiting the screen
-    _ttsService.stop();
-    _ttsService.dispose();
-    super.dispose();
-  }
-
-  String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return "Unknown Date";
-    try {
-      final DateTime dateTime = DateTime.parse(dateStr);
-      return DateFormat.yMMMMd().format(dateTime);
-    } catch (e) {
-      return "Unknown Date";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) =>
-      ArticleDetailViewModel()
-        ..fetchAndSummarizeArticle(widget.article['url']),
+    return MultiProvider(
+      providers: [
+        Provider<TextToSpeechService>(
+          create: (_) => TextToSpeechService(),
+          dispose: (_, ttsService) => ttsService.dispose(),
+        ),
+        ChangeNotifierProvider<ArticleDetailViewModel>(
+          create: (context) => ArticleDetailViewModel(
+            Provider.of<TextToSpeechService>(context, listen: false),
+          )..fetchAndSummarizeArticle(widget.article['url']),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -122,7 +101,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           fontSize: 20, fontStyle: FontStyle.italic),
                     ),
                     const SizedBox(height: 20),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -161,11 +139,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
-
                     if (viewModel.summary.isNotEmpty)
-                      TextToSpeechBar(
-                        text: viewModel.summary,
-                        ttsService: _ttsService,
+                      Consumer<TextToSpeechService>(
+                        builder: (context, ttsService, _) => TextToSpeechBar(
+                            text: viewModel.summary),
                       ),
                   ],
                 ),
@@ -173,8 +150,18 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             },
           ),
         ),
-        bottomNavigationBar: const BottomNavBar(currentIndex: 0,),
+        bottomNavigationBar: const BottomNavBar(currentIndex: 0),
       ),
     );
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return "Unknown Date";
+    try {
+      final DateTime dateTime = DateTime.parse(dateStr);
+      return DateFormat.yMMMMd().format(dateTime);
+    } catch (e) {
+      return "Unknown Date";
+    }
   }
 }
