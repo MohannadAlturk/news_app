@@ -16,12 +16,14 @@ class ArticleDetailViewModel extends ChangeNotifier {
   String get summary => _summary;
   bool get isLoading => _isLoading;
   bool get isPlaying => _isPlaying;
-  double get ttsProgress => _ttsProgress;
+  double get ttsProgress => ttsService.progress; // Access progress directly
 
   ArticleDetailViewModel(this.ttsService) {
+    // Set up progress updates from the TTS service
     ttsService.setOnProgressHandler((progress) {
       _ttsProgress = progress;
-      notifyListeners();
+      notifyListeners(); // Notify listeners to update the UI when progress changes
+      print("Progress updated in ViewModel: $_ttsProgress"); // Debug
     });
   }
 
@@ -42,13 +44,21 @@ class ArticleDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> toggleTTS() async {
-    if (_isPlaying) {
-      await ttsService.stop();
-      _ttsProgress = 0.0; // Reset progress on stop
+    _ttsProgress = ttsService.progress;
+
+    if (_isPlaying && ttsService.isPlaying) {
+      // Pause without resetting progress
+      await ttsService.pause();
     } else if (_summary.isNotEmpty) {
-      await ttsService.speak(_summary);
+      // Only start from the beginning if progress is 0.0 and not paused
+      if (_ttsProgress == 0.0 && !ttsService.isPaused) {
+        await ttsService.speak(_summary); // Start a new playback
+      } else {
+        await ttsService.resume(); // Resume from last position
+      }
     }
-    _isPlaying = !_isPlaying;
+
+    _isPlaying = ttsService.isPlaying || ttsService.isPaused; // Reflect actual TTS state
     notifyListeners();
   }
 

@@ -1,12 +1,16 @@
+import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class TextToSpeechService {
   final FlutterTts _flutterTts = FlutterTts();
   Function(double)? onProgress;
   String? _originalText;
-  int _lastEndPosition = 0; // Tracks last known position
+  int _lastEndPosition = 0;
+  int _currentPosition = 0;
   bool isPaused = false;
   bool isPlaying = false;
+  double _progress = 0.0;
+  Timer? _progressTimer;
 
   TextToSpeechService() {
     _flutterTts.setLanguage("en-US");
@@ -17,43 +21,65 @@ class TextToSpeechService {
     _flutterTts.setStartHandler(() {
       isPlaying = true;
       isPaused = false;
+      _startProgressFallback();
     });
 
     _flutterTts.setCompletionHandler(() {
       isPlaying = false;
       isPaused = false;
-      _resetProgress();
-      if (onProgress != null) onProgress!(1.0); // Completion at 100%
+      _progress = 1.0;
+      _lastEndPosition = 0;
+      _progressTimer?.cancel(); // Stop fallback timer
+      onProgress?.call(_progress);
     });
 
     _flutterTts.setCancelHandler(() {
       isPlaying = false;
       isPaused = false;
-      _resetProgress();
+      _progress = 0.0;
+      _lastEndPosition = 0;
+      _progressTimer?.cancel();
+      onProgress?.call(_progress);
     });
 
     _flutterTts.setPauseHandler(() {
       isPlaying = false;
       isPaused = true;
+      _lastEndPosition = _currentPosition;
+      _progressTimer?.cancel();
     });
 
     _flutterTts.setContinueHandler(() {
       isPlaying = true;
       isPaused = false;
+      _startProgressFallback(); // Restart fallback timer
     });
 
     _flutterTts.setProgressHandler((String text, int start, int end, String word) {
-      _lastEndPosition = end;
-      if (onProgress != null && _originalText != null) {
-        double progress = end / _originalText!.length;
-        onProgress!(progress);
+      if (_originalText != null) {
+        // Adjust end position to be relative to the last known position
+        _currentPosition = _lastEndPosition + end;
+
+        // Calculate progress as a fraction of the total text length
+        double calculatedProgress = _currentPosition / _originalText!.length;
+
+        // Only update progress if it moves forward
+        if (calculatedProgress > _progress) {
+          _progress = calculatedProgress;
+          onProgress?.call(_progress);
+          print("Progress updated in TextToSpeechService: $_progress");
+        }
       }
     });
+
   }
 
-  Future<void> speak(String text) async {
+  Future<void> speak(String text, {bool isResuming = false}) async {
     _originalText = text;
-    _lastEndPosition = 0; // Reset start position on new speak
+    if (!isResuming) {
+      _lastEndPosition = 0;
+      _progress = 0.0;
+    }
     await _speakFromPosition();
     isPlaying = true;
     isPaused = false;
@@ -62,6 +88,7 @@ class TextToSpeechService {
   Future<void> _speakFromPosition() async {
     if (_originalText != null) {
       String remainingText = _originalText!.substring(_lastEndPosition);
+      print("Speaking from position $_lastEndPosition");
       await _flutterTts.speak(remainingText);
     }
   }
@@ -71,14 +98,18 @@ class TextToSpeechService {
       await _flutterTts.pause();
       isPaused = true;
       isPlaying = false;
+      _lastEndPosition = _currentPosition;
+      _progressTimer?.cancel();
+      print("Paused at position $_lastEndPosition");
     }
   }
 
   Future<void> resume() async {
     if (isPaused) {
-      await _speakFromPosition(); // Resume from last known position
+      await _speakFromPosition();
       isPlaying = true;
       isPaused = false;
+      _startProgressFallback();
     }
   }
 
@@ -86,19 +117,30 @@ class TextToSpeechService {
     await _flutterTts.stop();
     isPlaying = false;
     isPaused = false;
-    _resetProgress();
+    _progress = 0.0;
+    _lastEndPosition = 0;
+    _progressTimer?.cancel();
+    print("Stopped playback, resetting positions");
   }
 
-  void _resetProgress() {
-    _lastEndPosition = 0;
-    onProgress?.call(0.0);
-  }
+  double get progress => _progress;
 
   void setOnProgressHandler(Function(double)? handler) {
     onProgress = handler;
   }
 
+  void _startProgressFallback() {
+    _progressTimer?.cancel(); // Cancel any existing timer
+    _progressTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      if (isPlaying && onProgress != null) {
+        onProgress!(_progress);
+        print("Fallback progress: $_progress");
+      }
+    });
+  }
+
   void dispose() {
     _flutterTts.stop();
+    _progressTimer?.cancel();
   }
 }

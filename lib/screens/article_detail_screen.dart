@@ -140,9 +140,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     ),
                     const SizedBox(height: 20),
                     if (viewModel.summary.isNotEmpty)
-                      Consumer<TextToSpeechService>(
-                        builder: (context, ttsService, _) => TextToSpeechBar(
-                            text: viewModel.summary),
+                      TextToSpeechBar(
+                        text: viewModel.summary
                       ),
                   ],
                 ),
