@@ -27,10 +27,13 @@ class TextToSpeechService {
     _flutterTts.setCompletionHandler(() {
       isPlaying = false;
       isPaused = false;
-      _progress = 1.0;
+      _progress = 0.0; // Reset progress to 0
       _lastEndPosition = 0;
       _progressTimer?.cancel(); // Stop fallback timer
+
+      // Notify the progress listener to reset the progress bar
       onProgress?.call(_progress);
+      print("Playback complete, resetting to stopped state");
     });
 
     _flutterTts.setCancelHandler(() {

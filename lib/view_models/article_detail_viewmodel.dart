@@ -16,14 +16,16 @@ class ArticleDetailViewModel extends ChangeNotifier {
   String get summary => _summary;
   bool get isLoading => _isLoading;
   bool get isPlaying => _isPlaying;
-  double get ttsProgress => ttsService.progress; // Access progress directly
+  double get ttsProgress => ttsService.progress;
 
   ArticleDetailViewModel(this.ttsService) {
     // Set up progress updates from the TTS service
     ttsService.setOnProgressHandler((progress) {
       _ttsProgress = progress;
-      notifyListeners(); // Notify listeners to update the UI when progress changes
-      print("Progress updated in ViewModel: $_ttsProgress"); // Debug
+      if (progress == 0.0 && !ttsService.isPlaying) {
+        _isPlaying = false; // Reflect stopped state on completion
+      }
+      notifyListeners(); // Update UI
     });
   }
 
@@ -50,15 +52,14 @@ class ArticleDetailViewModel extends ChangeNotifier {
       // Pause without resetting progress
       await ttsService.pause();
     } else if (_summary.isNotEmpty) {
-      // Only start from the beginning if progress is 0.0 and not paused
       if (_ttsProgress == 0.0 && !ttsService.isPaused) {
-        await ttsService.speak(_summary); // Start a new playback
+        await ttsService.speak(_summary);
       } else {
-        await ttsService.resume(); // Resume from last position
+        await ttsService.resume();
       }
     }
 
-    _isPlaying = ttsService.isPlaying || ttsService.isPaused; // Reflect actual TTS state
+    _isPlaying = ttsService.isPlaying || ttsService.isPaused;
     notifyListeners();
   }
 
