@@ -100,13 +100,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ],
               ),
             ),
-            Positioned(
-              bottom: 16,
-              right: 16,
-              child: LanguageSelectorWidget(
-                onLanguageChanged: _onLanguageChanged, // Pass the callback to update language
-              ),
-            ),
           ],
         ),
       ),

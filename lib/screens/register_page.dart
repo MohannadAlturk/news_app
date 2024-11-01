@@ -147,13 +147,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: _buildForm(),
               ),
             ),
-            Positioned(
-              bottom: 16,
-              right: 16,
-              child: LanguageSelectorWidget(
-                onLanguageChanged: _onLanguageChanged, // Pass the callback to update language
-              ),
-            ),
           ],
         ),
       ),
