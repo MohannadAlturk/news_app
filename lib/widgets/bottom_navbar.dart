@@ -32,6 +32,7 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      backgroundColor: Colors.white, // Set background color to white
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.menu), label: ''),
         BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: ''),

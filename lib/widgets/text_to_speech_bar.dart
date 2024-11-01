@@ -4,21 +4,26 @@ import '../view_models/article_detail_viewmodel.dart';
 
 class TextToSpeechBar extends StatelessWidget {
   final String text;
+  final String playText;
+  final String pauseText;
+  final String stopText;
 
   const TextToSpeechBar({
     super.key,
     required this.text,
+    required this.playText,
+    required this.pauseText,
+    required this.stopText,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Progress indicator that listens directly to ArticleDetailViewModel's ttsProgress
         Consumer<ArticleDetailViewModel>(
           builder: (context, viewModel, _) {
             return LinearProgressIndicator(
-              value: viewModel.ttsProgress, // Directly access ttsProgress from Provider
+              value: viewModel.ttsProgress,
               backgroundColor: Colors.grey[300],
               color: Colors.blue,
             );
@@ -32,16 +37,16 @@ class TextToSpeechBar extends StatelessWidget {
                 IconButton(
                   icon: Icon(
                     viewModel.isPlaying && !viewModel.ttsService.isPaused
-                        ? Icons.pause // Show pause if playing and not paused
-                        : Icons.play_arrow, // Show play if stopped or paused
+                        ? Icons.pause
+                        : Icons.play_arrow,
                     color: Colors.blue,
                   ),
                   onPressed: viewModel.toggleTTS,
                 ),
                 Text(
                   viewModel.isPlaying
-                      ? (viewModel.ttsService.isPaused ? 'Paused' : 'Playing...')
-                      : 'Stopped',
+                      ? (viewModel.ttsService.isPaused ? pauseText : playText)
+                      : stopText,
                   style: const TextStyle(color: Colors.blue),
                 ),
               ],

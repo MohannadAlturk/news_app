@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '/view_models/news_viewmodel.dart';
 import '/widgets/news_card.dart';
 import '/widgets/bottom_navbar.dart';
+import 'package:news_app/services/language_service.dart';
 import 'article_detail_screen.dart';
 
 class NewsScreen extends StatefulWidget {
@@ -14,10 +15,19 @@ class NewsScreen extends StatefulWidget {
 
 class _NewsScreenState extends State<NewsScreen> {
   final ScrollController _scrollController = ScrollController();
+  String _currentLanguage = 'en';
 
   @override
   void initState() {
     super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    String languageCode = await LanguageService.getLanguageCode();
+    setState(() {
+      _currentLanguage = languageCode;
+    });
   }
 
   @override
@@ -31,11 +41,12 @@ class _NewsScreenState extends State<NewsScreen> {
     return ChangeNotifierProvider(
       create: (_) => NewsViewModel()..fetchNewsArticles(),
       child: Scaffold(
+        backgroundColor: Colors.white, // Set scaffold background color to white
         appBar: AppBar(
           backgroundColor: Colors.blue,
-          title: const Text(
-            'Your News',
-            style: TextStyle(
+          title: Text(
+            getTranslatedText('your_news', _currentLanguage),
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -51,56 +62,58 @@ class _NewsScreenState extends State<NewsScreen> {
 
             return RefreshIndicator(
               onRefresh: () => viewModel.fetchNewsArticles(refresh: true),
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(8.0),
-                itemCount: viewModel.articles.length + 1, // Include the button at the end
-                itemBuilder: (context, index) {
-                  if (index == viewModel.articles.length) {
-                    // Add a "Load More" button at the bottom
-                    return Column(
-                      children: [
-                        if (viewModel.isFetchingMore)
-                          const Center(child: CircularProgressIndicator())
-                        else
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Fetch more articles when button is pressed
-                                viewModel.fetchMoreArticles();
-                              },
-                              child: const Text('Load More'), // "Load More"
+              child: Container(
+                color: Colors.white, // Ensure body content also has a white background
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(8.0),
+                  itemCount: viewModel.articles.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == viewModel.articles.length) {
+                      return Column(
+                        children: [
+                          if (viewModel.isFetchingMore)
+                            const Center(child: CircularProgressIndicator())
+                          else
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  viewModel.fetchMoreArticles();
+                                },
+                                child: Text(
+                                  getTranslatedText('load_more', _currentLanguage),
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 80),
+                        ],
+                      );
+                    }
+
+                    final article = viewModel.articles[index];
+                    final formattedDate = viewModel.formatDate(article['publishedAt']);
+                    final category = article['category'] ?? 'General';
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ArticleDetailScreen(
+                              article: article,
                             ),
                           ),
-                        const SizedBox(height: 80), // Padding to avoid being covered by the navbar
-                      ],
+                        );
+                      },
+                      child: NewsCard(
+                        article: article,
+                        formattedDate: formattedDate,
+                        category: category,
+                      ),
                     );
-                  }
-
-                  final article = viewModel.articles[index];
-                  final formattedDate = viewModel.formatDate(article['publishedAt']);
-                  final category = article['category'] ?? 'General'; // Default category if not available
-
-                  // Pass the article, formattedDate, and category to NewsCard
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ArticleDetailScreen(
-                            article: article, // Pass the full article object
-                          ),
-                        ),
-                      );
-                    },
-                    child: NewsCard(
-                      article: article,
-                      formattedDate: formattedDate,
-                      category: category, // Pass the category to NewsCard
-                    ),
-                  );
-                },
+                  },
+                ),
               ),
             );
           },
@@ -108,5 +121,10 @@ class _NewsScreenState extends State<NewsScreen> {
         bottomNavigationBar: const BottomNavBar(currentIndex: 0),
       ),
     );
+  }
+
+  String getTranslatedText(String key, String languageCode) {
+    // Placeholder function for retrieving translations.
+    return key;
   }
 }
