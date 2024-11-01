@@ -130,20 +130,23 @@ class _RegisterPageState extends State<RegisterPage> {
         title: TitleWidget(title: getTranslatedText('news_app', _currentLanguage)),
         automaticallyImplyLeading: false,
       ),
-      body: Stack(
-        children: [
-          Center(
-            child: SingleChildScrollView(
-              child: _buildForm(),
+      body: Container(
+        color: Colors.white,
+        child: Stack(
+          children: [
+            Center(
+              child: SingleChildScrollView(
+                child: _buildForm(),
+              ),
             ),
-          ),
-          const Positioned(
-            bottom: 16,
-            right: 16,
-            child: LanguageSelectorWidget(), // Positioned at the bottom-right corner
-          ),
-        ],
-      ),
+            const Positioned(
+              bottom: 16,
+              right: 16,
+              child: LanguageSelectorWidget(), // Positioned at the bottom-right corner
+            ),
+          ],
+        ),
+      )
     );
   }
 

@@ -167,19 +167,22 @@ class _LoginPageState extends State<LoginPage> {
         ),
         automaticallyImplyLeading: false,
       ),
-      body: Stack(
-        children: [
-          Center(
-            child: SingleChildScrollView(
-              child: _buildForm(),
+      body: Container(
+        color: Colors.white, // Set the entire background color to white
+        child: Stack(
+          children: [
+            Center(
+              child: SingleChildScrollView(
+                child: _buildForm(),
+              ),
             ),
-          ),
-          const Positioned(
-            bottom: 16,
-            right: 16,
-            child: LanguageSelectorWidget(), // Positioned at the bottom-right corner
-          ),
-        ],
+            const Positioned(
+              bottom: 16,
+              right: 16,
+              child: LanguageSelectorWidget(), // Positioned at the bottom-right corner
+            ),
+          ],
+        ),
       ),
     );
   }
