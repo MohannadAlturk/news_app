@@ -119,6 +119,14 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  void _onLanguageChanged(String newLanguage) {
+    print(_currentLanguage);
+    setState(() {
+      _currentLanguage = newLanguage;
+    });
+    print(_currentLanguage);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,14 +147,16 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: _buildForm(),
               ),
             ),
-            const Positioned(
+            Positioned(
               bottom: 16,
               right: 16,
-              child: LanguageSelectorWidget(), // Positioned at the bottom-right corner
+              child: LanguageSelectorWidget(
+                onLanguageChanged: _onLanguageChanged, // Pass the callback to update language
+              ),
             ),
           ],
         ),
-      )
+      ),
     );
   }
 

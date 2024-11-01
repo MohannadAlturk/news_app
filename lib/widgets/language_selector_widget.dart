@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:news_app/services/language_service.dart';
 
 class LanguageSelectorWidget extends StatefulWidget {
-  const LanguageSelectorWidget({super.key});
+  final ValueChanged<String> onLanguageChanged;
+
+  const LanguageSelectorWidget({super.key, required this.onLanguageChanged});
 
   @override
   _LanguageSelectorWidgetState createState() => _LanguageSelectorWidgetState();
@@ -29,39 +31,63 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
     setState(() {
       _selectedLanguage = languageCode;
     });
-    // Here, you can add logic to reload the app’s language if necessary.
+    widget.onLanguageChanged(languageCode);
   }
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<String>(
-      value: _selectedLanguage,
-      icon: const Icon(Icons.language, color: Colors.blue),
-      onChanged: (String? newValue) {
-        if (newValue != null) {
-          _saveLanguagePreference(newValue);
-        }
-      },
-      items: <String>['en', 'de', 'bg', 'ar']
-          .map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(_getLanguageName(value)),
-        );
-      }).toList(),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: Colors.blueAccent),
+      ),
+      child: DropdownButton<String>(
+        value: _selectedLanguage,
+        icon: const Icon(Icons.language, color: Colors.blue),
+        dropdownColor: Colors.white,
+        underline: Container(), // Remove the default underline
+        onChanged: (String? newValue) {
+          if (newValue != null) {
+            _saveLanguagePreference(newValue);
+          }
+        },
+        items: [
+          DropdownMenuItem(
+            value: 'en',
+            child: _buildMenuItem('English', '🇬🇧'),
+          ),
+          DropdownMenuItem(
+            value: 'de',
+            child: _buildMenuItem('Deutsch', '🇩🇪'),
+          ),
+          DropdownMenuItem(
+            value: 'bg',
+            child: _buildMenuItem('Български', '🇧🇬'),
+          ),
+          DropdownMenuItem(
+            value: 'ar',
+            child: _buildMenuItem('العربية', '🇸🇦'),
+          ),
+        ],
+      ),
     );
   }
 
-  String _getLanguageName(String code) {
-    switch (code) {
-      case 'de':
-        return 'Deutsch';
-      case 'bg':
-        return 'Български';
-      case 'ar':
-        return 'العربية';
-      default:
-        return 'English';
-    }
+  Widget _buildMenuItem(String text, String flag) {
+    return Row(
+      children: [
+        Text(
+          flag,
+          style: const TextStyle(fontSize: 18),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(color: Colors.black, fontSize: 16),
+        ),
+      ],
+    );
   }
 }

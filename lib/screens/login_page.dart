@@ -115,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildForm() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0), // Add horizontal padding
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
             title: 'Email',
             controller: _controllerEmail,
           ),
-          const SizedBox(height: 10), // Reduced spacing between fields
+          const SizedBox(height: 10),
           EntryFieldWidget(
             title: 'Password',
             controller: _controllerPassword,
@@ -155,6 +155,12 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _onLanguageChanged(String newLanguage) {
+    setState(() {
+      _currentLanguage = newLanguage;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
         automaticallyImplyLeading: false,
       ),
       body: Container(
-        color: Colors.white, // Set the entire background color to white
+        color: Colors.white,
         child: Stack(
           children: [
             Center(
@@ -176,10 +182,12 @@ class _LoginPageState extends State<LoginPage> {
                 child: _buildForm(),
               ),
             ),
-            const Positioned(
+            Positioned(
               bottom: 16,
               right: 16,
-              child: LanguageSelectorWidget(), // Positioned at the bottom-right corner
+              child: LanguageSelectorWidget(
+                onLanguageChanged: _onLanguageChanged, // Pass the callback to update language
+              ),
             ),
           ],
         ),
