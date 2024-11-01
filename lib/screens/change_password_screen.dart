@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:news_app/services/language_service.dart';
 import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
 
@@ -14,6 +15,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _currentPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   String? errorMessage = '';
+  String _currentLanguage = 'en';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    String languageCode = await LanguageService.getLanguageCode();
+    setState(() {
+      _currentLanguage = languageCode;
+    });
+  }
 
   Future<void> _changePassword() async {
     try {
@@ -28,7 +43,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       // Update password
       await user.updatePassword(_newPasswordController.text);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Password changed successfully.")),
+        SnackBar(content: Text(getTranslatedText('password_changed_success', _currentLanguage))),
       );
       Navigator.pop(context); // Return to settings after password change
     } on FirebaseAuthException catch (e) {
@@ -42,7 +57,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Change Password"),
+        title: Text(getTranslatedText('change_password', _currentLanguage)),
         backgroundColor: Colors.blue,
       ),
       body: Padding(
@@ -51,13 +66,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             EntryFieldWidget(
-              title: 'Current Password',
+              title: getTranslatedText('current_password', _currentLanguage),
               controller: _currentPasswordController,
               obscureText: true,
             ),
             const SizedBox(height: 10),
             EntryFieldWidget(
-              title: 'New Password',
+              title: getTranslatedText('new_password', _currentLanguage),
               controller: _newPasswordController,
               obscureText: true,
             ),
@@ -65,11 +80,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ErrorMessageWidget(errorMessage: errorMessage),
             ElevatedButton(
               onPressed: _changePassword,
-              child: const Text('Change Password'),
+              child: Text(getTranslatedText('change_password_button', _currentLanguage)),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String getTranslatedText(String key, String languageCode) {
+    // Placeholder function for retrieving translations.
+    return key;
   }
 }

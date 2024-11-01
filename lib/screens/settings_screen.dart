@@ -3,20 +3,47 @@ import 'package:news_app/screens/interests_screen.dart';
 import 'package:news_app/screens/login_page.dart';
 import 'package:news_app/services/auth.dart';
 import 'package:news_app/widgets/bottom_navbar.dart';
+import 'package:news_app/services/language_service.dart';
+import 'package:news_app/widgets/language_selector_widget.dart';
 import 'change_password_screen.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  String _currentLanguage = 'en';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    String languageCode = await LanguageService.getLanguageCode();
+    setState(() {
+      _currentLanguage = languageCode;
+    });
+  }
+
+  void _onLanguageChanged(String newLanguage) {
+    setState(() {
+      _currentLanguage = newLanguage;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text(
-          'Settings',
-          style: TextStyle(
+        title: Text(
+          getTranslatedText('settings', _currentLanguage),
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -25,48 +52,77 @@ class SettingsScreen extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              title: const Text('Change Interests', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              leading: const Icon(Icons.interests, color: Colors.blue),
-              onTap: () async {
-                final interestsUpdated = await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const InterestsScreen()),
-                );
-
-                if (interestsUpdated == true) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Interests updated successfully.")),
+      body: Container(
+        color: Colors.white, // Set the background color to white for the entire body
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                title: Text(
+                  getTranslatedText('change_interests', _currentLanguage),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                leading: const Icon(Icons.interests, color: Colors.blue),
+                onTap: () async {
+                  final interestsUpdated = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const InterestsScreen()),
                   );
-                }
-              },
-            ),
-            ListTile(
-              title: const Text('Change Password', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              leading: const Icon(Icons.lock, color: Colors.blue),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
-                );
-              },
-            ),
-            ListTile(
-              title: const Text('Delete Account', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              leading: const Icon(Icons.delete, color: Colors.red),
-              onTap: () => _showDeleteAccountDialog(context),
-            ),
-            ListTile(
-              title: const Text('Sign Out', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              leading: const Icon(Icons.logout, color: Colors.blue),
-              onTap: () => _showSignOutDialog(context),
-            ),
-          ],
+
+                  if (interestsUpdated == true) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(getTranslatedText('interests_updated', _currentLanguage))),
+                    );
+                  }
+                },
+              ),
+              ListTile(
+                title: Text(
+                  getTranslatedText('change_password', _currentLanguage),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                leading: const Icon(Icons.lock, color: Colors.blue),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text(
+                  getTranslatedText('delete_account', _currentLanguage),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                leading: const Icon(Icons.delete, color: Colors.red),
+                onTap: () => _showDeleteAccountDialog(context),
+              ),
+              ListTile(
+                title: Text(
+                  getTranslatedText('sign_out', _currentLanguage),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                leading: const Icon(Icons.logout, color: Colors.blue),
+                onTap: () => _showSignOutDialog(context),
+              ),
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      getTranslatedText('language', _currentLanguage),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    LanguageSelectorWidget(onLanguageChanged: _onLanguageChanged),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 2),
@@ -77,23 +133,23 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Sign Out"),
-        content: const Text("Are you sure you want to sign out?"),
+        title: Text(getTranslatedText('sign_out', _currentLanguage)),
+        content: Text(getTranslatedText('sign_out_confirmation', _currentLanguage)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            child: Text(getTranslatedText('cancel', _currentLanguage)),
           ),
           TextButton(
             onPressed: () async {
               await Auth().signOut();
-              Navigator.popUntil(context, (route) => route.isFirst); // Clear stack after sign-out
+              Navigator.popUntil(context, (route) => route.isFirst);
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
-            child: const Text("Sign Out"),
+            child: Text(getTranslatedText('sign_out', _currentLanguage)),
           ),
         ],
       ),
@@ -104,36 +160,41 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Delete Account"),
-        content: const Text("Are you sure you want to delete your account? This action cannot be undone."),
+        title: Text(getTranslatedText('delete_account', _currentLanguage)),
+        content: Text(getTranslatedText('delete_account_confirmation', _currentLanguage)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            child: Text(getTranslatedText('cancel', _currentLanguage)),
           ),
           TextButton(
             onPressed: () async {
               try {
                 await Auth().deleteUser();
-                Navigator.popUntil(context, (route) => route.isFirst); // Clear stack after account deletion
+                Navigator.popUntil(context, (route) => route.isFirst);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Account deleted successfully.")),
+                  SnackBar(content: Text(getTranslatedText('account_deleted', _currentLanguage))),
                 );
               } catch (e) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Failed to delete account: $e")),
+                  SnackBar(content: Text(getTranslatedText('account_delete_failed', _currentLanguage))),
                 );
               }
             },
-            child: const Text("Delete"),
+            child: Text(getTranslatedText('delete', _currentLanguage)),
           ),
         ],
       ),
     );
+  }
+
+  String getTranslatedText(String key, String languageCode) {
+    // Placeholder function: Implement translation retrieval here using an external file or localization package.
+    return key;
   }
 }

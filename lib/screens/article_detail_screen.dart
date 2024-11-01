@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:intl/intl.dart';
 import '../services/text_to_speech_service.dart';
 import '../view_models/article_detail_viewmodel.dart';
+import '../services/language_service.dart';
 import '../widgets/bottom_navbar.dart';
 import '../widgets/text_to_speech_bar.dart';
-import 'package:intl/intl.dart';
 import 'full_article_webview.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
@@ -18,6 +19,21 @@ class ArticleDetailScreen extends StatefulWidget {
 }
 
 class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
+  String _currentLanguage = 'en';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    String languageCode = await LanguageService.getLanguageCode();
+    setState(() {
+      _currentLanguage = languageCode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -40,7 +56,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           ),
           backgroundColor: Colors.blue,
         ),
-        body: Padding(
+        body: Container(
+          color: Colors.white, // Set background color to white
           padding: const EdgeInsets.all(16.0),
           child: Consumer<ArticleDetailViewModel>(
             builder: (context, viewModel, _) {
@@ -62,9 +79,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           width: double.infinity,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
-                            return const Text(
-                              'Image not available',
-                              style: TextStyle(color: Colors.grey),
+                            return Text(
+                              getTranslatedText('image_not_available', _currentLanguage),
+                              style: const TextStyle(color: Colors.grey),
                             );
                           },
                         ),
@@ -85,7 +102,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                               fontSize: 14, color: Colors.grey),
                         ),
                         Text(
-                          widget.article['source']?['name'] ?? 'Unknown Source',
+                          widget.article['source']?['name'] ??
+                              getTranslatedText('unknown_source', _currentLanguage),
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -118,20 +136,20 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue),
-                          child: const Text(
-                            'Read more',
-                            style: TextStyle(color: Colors.white),
+                          child: Text(
+                            getTranslatedText('read_more', _currentLanguage),
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                         ElevatedButton.icon(
                           onPressed: () {
                             Share.share(
-                                'Check this out: ${widget.article['title']} - ${widget.article['url']} - Sent with NewsAI');
+                                '${getTranslatedText('check_this_out', _currentLanguage)}: ${widget.article['title']} - ${widget.article['url']} - Sent with NewsAI');
                           },
                           icon: const Icon(Icons.share, color: Colors.white),
-                          label: const Text(
-                            'Share',
-                            style: TextStyle(color: Colors.white),
+                          label: Text(
+                            getTranslatedText('share', _currentLanguage),
+                            style: const TextStyle(color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue),
@@ -141,7 +159,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     const SizedBox(height: 20),
                     if (viewModel.summary.isNotEmpty)
                       TextToSpeechBar(
-                        text: viewModel.summary
+                        text: viewModel.summary,
+                        playText: getTranslatedText('play', _currentLanguage),
+                        pauseText: getTranslatedText('pause', _currentLanguage),
+                        stopText: getTranslatedText('stop', _currentLanguage),
                       ),
                   ],
                 ),
@@ -155,12 +176,17 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return "Unknown Date";
+    if (dateStr == null || dateStr.isEmpty) return getTranslatedText("unknown_date", _currentLanguage);
     try {
       final DateTime dateTime = DateTime.parse(dateStr);
       return DateFormat.yMMMMd().format(dateTime);
     } catch (e) {
-      return "Unknown Date";
+      return getTranslatedText("unknown_date", _currentLanguage);
     }
+  }
+
+  String getTranslatedText(String key, String languageCode) {
+    // Placeholder function to simulate translation retrieval
+    return key;
   }
 }

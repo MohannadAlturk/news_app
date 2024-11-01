@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/services/firestore_service.dart';
+import 'package:news_app/services/language_service.dart';
 import 'package:news_app/widgets/interest_tile.dart';
 
 class InterestsScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class InterestsScreen extends StatefulWidget {
 class _InterestsScreenState extends State<InterestsScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   List<String> _selectedInterests = [];
+  String _currentLanguage = 'en';
 
   final List<Map<String, dynamic>> _interestsOptions = [
     {'title': 'Business', 'icon': Icons.business},
@@ -27,12 +29,20 @@ class _InterestsScreenState extends State<InterestsScreen> {
   void initState() {
     super.initState();
     _loadUserInterests();
+    _loadLanguage();
   }
 
   Future<void> _loadUserInterests() async {
     final interests = await _firestoreService.getUserInterests();
     setState(() {
       _selectedInterests = interests;
+    });
+  }
+
+  Future<void> _loadLanguage() async {
+    String languageCode = await LanguageService.getLanguageCode();
+    setState(() {
+      _currentLanguage = languageCode;
     });
   }
 
@@ -56,9 +66,9 @@ class _InterestsScreenState extends State<InterestsScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text(
-          'Select Your Interests',
-          style: TextStyle(
+        title: Text(
+          getTranslatedText('select_your_interests', _currentLanguage),
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -82,7 +92,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
             final isSelected = _selectedInterests.contains(interest);
 
             return InterestTile(
-              interest: interest,
+              interest: getTranslatedText(interest.toLowerCase(), _currentLanguage),
               icon: icon,
               isSelected: isSelected,
               onTap: () => _toggleInterest(interest),
@@ -96,5 +106,10 @@ class _InterestsScreenState extends State<InterestsScreen> {
         child: const Icon(Icons.save),
       ),
     );
+  }
+
+  String getTranslatedText(String key, String languageCode) {
+    // Placeholder function to simulate translation retrieval
+    return key;
   }
 }
