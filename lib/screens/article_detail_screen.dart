@@ -4,10 +4,10 @@ import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import '../services/text_to_speech_service.dart';
 import '../view_models/article_detail_viewmodel.dart';
-import '../services/language_service.dart';
 import '../widgets/bottom_navbar.dart';
 import '../widgets/text_to_speech_bar.dart';
 import 'full_article_webview.dart';
+import 'package:news_app/services/language_service.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
   final Map<String, dynamic> article;
@@ -80,7 +80,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Text(
-                              getTranslatedText('image_not_available', _currentLanguage),
+                              getTranslatedText('image_not_available'),
                               style: const TextStyle(color: Colors.grey),
                             );
                           },
@@ -103,7 +103,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         ),
                         Text(
                           widget.article['source']?['name'] ??
-                              getTranslatedText('unknown_source', _currentLanguage),
+                              getTranslatedText('unknown_source'),
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -137,18 +137,18 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue),
                           child: Text(
-                            getTranslatedText('read_more', _currentLanguage),
+                            getTranslatedText('read_more'),
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
                         ElevatedButton.icon(
                           onPressed: () {
                             Share.share(
-                                '${getTranslatedText('check_this_out', _currentLanguage)}: ${widget.article['title']} - ${widget.article['url']} - Sent with NewsAI');
+                                '${getTranslatedText('check_this_out')}: ${widget.article['title']} - ${widget.article['url']} - Sent with NewsAI');
                           },
                           icon: const Icon(Icons.share, color: Colors.white),
                           label: Text(
-                            getTranslatedText('share', _currentLanguage),
+                            getTranslatedText('share'),
                             style: const TextStyle(color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(
@@ -160,9 +160,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     if (viewModel.summary.isNotEmpty)
                       TextToSpeechBar(
                         text: viewModel.summary,
-                        playText: getTranslatedText('play', _currentLanguage),
-                        pauseText: getTranslatedText('pause', _currentLanguage),
-                        stopText: getTranslatedText('stop', _currentLanguage),
+                        playText: getTranslatedText('play'),
+                        pauseText: getTranslatedText('pause'),
+                        stopText: getTranslatedText('stop'),
                       ),
                   ],
                 ),
@@ -176,17 +176,16 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return getTranslatedText("unknown_date", _currentLanguage);
+    if (dateStr == null || dateStr.isEmpty) return getTranslatedText("unknown_date");
     try {
       final DateTime dateTime = DateTime.parse(dateStr);
       return DateFormat.yMMMMd().format(dateTime);
     } catch (e) {
-      return getTranslatedText("unknown_date", _currentLanguage);
+      return getTranslatedText("unknown_date");
     }
   }
 
-  String getTranslatedText(String key, String languageCode) {
-    // Placeholder function to simulate translation retrieval
-    return key;
+  String getTranslatedText(String key) {
+    return LanguageService.translate(key);
   }
 }

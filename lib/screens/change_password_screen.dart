@@ -32,7 +32,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _changePassword() async {
     try {
-      // Reauthenticate the user with the current password
       final user = FirebaseAuth.instance.currentUser!;
       final cred = EmailAuthProvider.credential(
         email: user.email!,
@@ -40,12 +39,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       );
       await user.reauthenticateWithCredential(cred);
 
-      // Update password
       await user.updatePassword(_newPasswordController.text);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(getTranslatedText('password_changed_success', _currentLanguage))),
+        SnackBar(content: Text(getTranslatedText('password_changed_success'))),
       );
-      Navigator.pop(context); // Return to settings after password change
+      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -57,7 +55,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(getTranslatedText('change_password', _currentLanguage)),
+        title: Text(getTranslatedText('change_password')),
         backgroundColor: Colors.blue,
       ),
       body: Padding(
@@ -66,13 +64,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             EntryFieldWidget(
-              title: getTranslatedText('current_password', _currentLanguage),
+              title: getTranslatedText('current_password'),
               controller: _currentPasswordController,
               obscureText: true,
             ),
             const SizedBox(height: 10),
             EntryFieldWidget(
-              title: getTranslatedText('new_password', _currentLanguage),
+              title: getTranslatedText('new_password'),
               controller: _newPasswordController,
               obscureText: true,
             ),
@@ -80,7 +78,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ErrorMessageWidget(errorMessage: errorMessage),
             ElevatedButton(
               onPressed: _changePassword,
-              child: Text(getTranslatedText('change_password_button', _currentLanguage)),
+              child: Text(getTranslatedText('change_password_button')),
             ),
           ],
         ),
@@ -88,8 +86,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 
-  String getTranslatedText(String key, String languageCode) {
-    // Placeholder function for retrieving translations.
-    return key;
+  String getTranslatedText(String key) {
+    return LanguageService.translate(key);
   }
 }

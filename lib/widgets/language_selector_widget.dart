@@ -1,37 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/services/language_service.dart';
+import 'package:news_app/services/firestore_service.dart';
 
 class LanguageSelectorWidget extends StatefulWidget {
   final ValueChanged<String> onLanguageChanged;
+  final String currentLanguage;
 
-  const LanguageSelectorWidget({super.key, required this.onLanguageChanged});
+  const LanguageSelectorWidget({
+    super.key,
+    required this.onLanguageChanged,
+    required this.currentLanguage,
+  });
 
   @override
   _LanguageSelectorWidgetState createState() => _LanguageSelectorWidgetState();
 }
 
 class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
-  String _selectedLanguage = 'en';
+  late String _selectedLanguage;
+  final FirestoreService _firestoreService = FirestoreService();
 
   @override
   void initState() {
     super.initState();
+    _selectedLanguage = widget.currentLanguage;
     _loadLanguagePreference();
   }
 
   Future<void> _loadLanguagePreference() async {
-    String languageCode = await LanguageService.getLanguageCode();
-    setState(() {
-      _selectedLanguage = languageCode;
-    });
+    String? languageCode = await _firestoreService.getUserLanguage();
+    if (languageCode != null) {
+      setState(() {
+        _selectedLanguage = languageCode;
+      });
+    }
   }
 
   Future<void> _saveLanguagePreference(String languageCode) async {
-    await LanguageService.setLanguageCode(languageCode);
+    await LanguageService.loadLanguage(languageCode);
     setState(() {
       _selectedLanguage = languageCode;
     });
     widget.onLanguageChanged(languageCode);
+    await _firestoreService.saveUserLanguage(languageCode);
   }
 
   @override
@@ -47,7 +58,7 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget> {
         value: _selectedLanguage,
         icon: const Icon(Icons.language, color: Colors.blue),
         dropdownColor: Colors.white,
-        underline: Container(), // Remove the default underline
+        underline: Container(),
         onChanged: (String? newValue) {
           if (newValue != null) {
             _saveLanguagePreference(newValue);

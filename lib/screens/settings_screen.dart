@@ -30,7 +30,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  void _onLanguageChanged(String newLanguage) {
+  void _onLanguageChanged(String newLanguage) async{
+    await LanguageService.loadLanguage(newLanguage);
     setState(() {
       _currentLanguage = newLanguage;
     });
@@ -42,7 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Text(
-          getTranslatedText('settings', _currentLanguage),
+          getTranslatedText('settings'),
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -61,7 +62,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               ListTile(
                 title: Text(
-                  getTranslatedText('change_interests', _currentLanguage),
+                  getTranslatedText('change_interests'),
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 leading: const Icon(Icons.interests, color: Colors.blue),
@@ -73,14 +74,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   if (interestsUpdated == true) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(getTranslatedText('interests_updated', _currentLanguage))),
+                      SnackBar(content: Text(getTranslatedText('interests_updated'))),
                     );
                   }
                 },
               ),
               ListTile(
                 title: Text(
-                  getTranslatedText('change_password', _currentLanguage),
+                  getTranslatedText('change_password'),
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 leading: const Icon(Icons.lock, color: Colors.blue),
@@ -93,7 +94,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               ListTile(
                 title: Text(
-                  getTranslatedText('delete_account', _currentLanguage),
+                  getTranslatedText('delete_account'),
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 leading: const Icon(Icons.delete, color: Colors.red),
@@ -101,7 +102,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               ListTile(
                 title: Text(
-                  getTranslatedText('sign_out', _currentLanguage),
+                  getTranslatedText('sign_out'),
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 leading: const Icon(Icons.logout, color: Colors.blue),
@@ -114,10 +115,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      getTranslatedText('language', _currentLanguage),
+                      getTranslatedText('language'),
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    LanguageSelectorWidget(onLanguageChanged: _onLanguageChanged),
+                    LanguageSelectorWidget(onLanguageChanged: _onLanguageChanged,
+                      currentLanguage: _currentLanguage,
+                    ),
                   ],
                 ),
               ),
@@ -133,12 +136,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(getTranslatedText('sign_out', _currentLanguage)),
-        content: Text(getTranslatedText('sign_out_confirmation', _currentLanguage)),
+        title: Text(getTranslatedText('sign_out')),
+        content: Text(getTranslatedText('sign_out_confirmation')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(getTranslatedText('cancel', _currentLanguage)),
+            child: Text(getTranslatedText('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -149,7 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
-            child: Text(getTranslatedText('sign_out', _currentLanguage)),
+            child: Text(getTranslatedText('sign_out')),
           ),
         ],
       ),
@@ -160,12 +163,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(getTranslatedText('delete_account', _currentLanguage)),
-        content: Text(getTranslatedText('delete_account_confirmation', _currentLanguage)),
+        title: Text(getTranslatedText('delete_account')),
+        content: Text(getTranslatedText('delete_account_confirmation')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(getTranslatedText('cancel', _currentLanguage)),
+            child: Text(getTranslatedText('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -177,24 +180,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(getTranslatedText('account_deleted', _currentLanguage))),
+                  SnackBar(content: Text(getTranslatedText('account_deleted'))),
                 );
               } catch (e) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(getTranslatedText('account_delete_failed', _currentLanguage))),
+                  SnackBar(content: Text(getTranslatedText('account_delete_failed'))),
                 );
               }
             },
-            child: Text(getTranslatedText('delete', _currentLanguage)),
+            child: Text(getTranslatedText('delete')),
           ),
         ],
       ),
     );
   }
 
-  String getTranslatedText(String key, String languageCode) {
-    // Placeholder function: Implement translation retrieval here using an external file or localization package.
-    return key;
+  String getTranslatedText(String key) {
+    return LanguageService.translate(key);
   }
 }

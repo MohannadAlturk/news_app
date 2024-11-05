@@ -60,16 +60,16 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() {
         switch (e.code) {
           case 'email-already-in-use':
-            errorMessage = getTranslatedText('email_already_in_use', _currentLanguage);
+            errorMessage = getTranslatedText('email_already_in_use');
             break;
           case 'invalid-email':
-            errorMessage = getTranslatedText('invalid_email', _currentLanguage);
+            errorMessage = getTranslatedText('invalid_email');
             break;
           case 'weak-password':
-            errorMessage = getTranslatedText('weak_password', _currentLanguage);
+            errorMessage = getTranslatedText('weak_password');
             break;
           default:
-            errorMessage = getTranslatedText('registration_failed', _currentLanguage);
+            errorMessage = getTranslatedText('registration_failed');
         }
       });
     }
@@ -84,7 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       },
       child: Text(
-        getTranslatedText('login_instead', _currentLanguage),
+        getTranslatedText('login_instead'),
         style: const TextStyle(color: Colors.blue),
       ),
     );
@@ -112,6 +112,8 @@ class _RegisterPageState extends State<RegisterPage> {
           SubmitButtonWidget(
             isLogin: false,
             onPressed: _createUser,
+            loginText: getTranslatedText('login'),
+            registerText: getTranslatedText('register'),
           ),
           _buildLoginInsteadButton(),
         ],
@@ -135,7 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
         centerTitle: true,
-        title: TitleWidget(title: getTranslatedText('news_app', _currentLanguage)),
+        title: TitleWidget(title: getTranslatedText('news_app')),
         automaticallyImplyLeading: false,
       ),
       body: Container(
@@ -153,8 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  String getTranslatedText(String key, String languageCode) {
-    // Placeholder function: Implement translation retrieval here using an external file or localization package.
-    return key;
+  String getTranslatedText(String key) {
+    return LanguageService.translate(key);
   }
 }
