@@ -4,6 +4,8 @@ import 'dart:math';
 import '../services/translation_service.dart';
 import '/services/news_api_service.dart';
 import '/services/firestore_service.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 
 class NewsViewModel extends ChangeNotifier {
   final NewsApiService _newsApiService = NewsApiService();
@@ -16,21 +18,26 @@ class NewsViewModel extends ChangeNotifier {
   int _currentPage = 1;
 
   List<dynamic> get articles => _articles;
+
   bool get isLoading => _isLoading;
+
   bool get isFetchingMore => _isFetchingMore;
 
-  Future<List<dynamic>> _fetchAndFilterArticles(List<String> interests, int page, {String language = 'en'}) async {
+  Future<List<dynamic>> _fetchAndFilterArticles(List<String> interests,
+      int page, {String language = 'en'}) async {
     List<dynamic> articles = [];
 
     for (String category in interests) {
-      final fetchedArticles = await _newsApiService.fetchArticlesByCategory(category, page: page);
+      final fetchedArticles = await _newsApiService.fetchArticlesByCategory(
+          category, page: page);
 
       articles.addAll(
         fetchedArticles.where((article) =>
         article['title'] != null &&
             article['publishedAt'] != null &&
             article['title'].isNotEmpty &&
-            !article['title'].toLowerCase().contains('removed')
+            !article['title'].toLowerCase().contains('removed') &&
+            article["description"] != null
         ).toList(),
       );
     }
@@ -38,11 +45,11 @@ class NewsViewModel extends ChangeNotifier {
     // Shuffle to randomize display order
     articles.shuffle(Random());
 
-    // Translate if the selected language is not English
+    // Translate articles if the selected language is not English
     if (language != "en") {
-      final translatedArticles = await _translationService.translateArticles(articles, language);
+      final translatedArticles = await _translationService.translateArticles(
+          articles, language);
       if (translatedArticles != null) {
-        // Replace original articles with translated ones
         for (int i = 0; i < articles.length; i++) {
           articles[i]['title'] = translatedArticles[i]['title'];
           articles[i]['description'] = translatedArticles[i]['description'];
@@ -53,7 +60,9 @@ class NewsViewModel extends ChangeNotifier {
     return articles;
   }
 
-  Future<void> fetchNewsArticles({bool refresh = false, String language = 'en'}) async {
+
+  Future<void> fetchNewsArticles(
+      {bool refresh = false, String language = 'en'}) async {
     if (refresh) {
       _currentPage = 1;
       _articles.clear();
@@ -66,9 +75,9 @@ class NewsViewModel extends ChangeNotifier {
       // Fetch user-selected interests (categories) from Firestore
       List<String> interests = await _firestoreService.getUserInterests();
 
-      // Use helper function to fetch and filter articles with the specified language
-      _articles = await _fetchAndFilterArticles(interests, _currentPage, language: language);
-
+      // Fetch and translate articles
+      _articles = await _fetchAndFilterArticles(
+          interests, _currentPage, language: language);
     } catch (error) {
       print('Error fetching articles: $error');
       _articles = [];
@@ -88,11 +97,12 @@ class NewsViewModel extends ChangeNotifier {
     try {
       List<String> interests = await _firestoreService.getUserInterests();
 
-      // Fetch additional articles with the specified language
-      final moreArticles = await _fetchAndFilterArticles(interests, _currentPage, language: language);
+      // Fetch and translate additional articles
+      final moreArticles = await _fetchAndFilterArticles(
+          interests, _currentPage, language: language);
 
+      // Add translated articles to the main list
       _articles.addAll(moreArticles);
-
     } catch (error) {
       print('Error fetching more articles: $error');
     } finally {
@@ -102,12 +112,15 @@ class NewsViewModel extends ChangeNotifier {
     }
   }
 
+
   // Function to format date as "Month Day, Year"
-  String formatDate(String? publishedAt) {
+  String formatDate(String? publishedAt, {String locale = 'en'}) {
     if (publishedAt != null) {
       try {
+        initializeDateFormatting(locale);
         DateTime dateTime = DateTime.parse(publishedAt);
-        return DateFormat.yMMMMd().format(dateTime);
+        return DateFormat.yMMMMd(locale).format(
+            dateTime); // Use locale parameter
       } catch (e) {
         return 'Invalid date';
       }
