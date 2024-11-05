@@ -53,5 +53,6 @@
   "invalid_email": "Please enter a valid email address.",
   "weak_password": "Password is too weak.",
   "registration_failed": "Registration failed. Please try again.",
-  "login_instead": "Already have an account? Log in"
+  "login_instead": "Already have an account? Log in",
+  "load_more": "Load More"
 }
