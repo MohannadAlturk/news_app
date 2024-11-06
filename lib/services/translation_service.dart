@@ -5,9 +5,9 @@ class TranslationService {
   final GeminiService _geminiService = GeminiService();
 
   String sanitizeJson(String jsonString) {
-    // Step 1: Remove all double quotes from the JSON string
+    // Step 1: Remove all double quotes and other symbols from the JSON string
     jsonString = jsonString.replaceAll(RegExp(r'["“”„]'), '');
-
+    jsonString = jsonString.replaceAll(r'\', r'\\');
     // Step 2: Re-add necessary double quotes around JSON structure
     // Add quotes around "articles" key
     jsonString = jsonString.replaceAllMapped(

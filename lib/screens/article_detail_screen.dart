@@ -198,7 +198,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   String _formatDate(String? dateStr, {String locale = "en"}) {
-    if (dateStr == null || dateStr.isEmpty) return getTranslatedText("unknown_date", _currentLanguage);
+    if (dateStr == null || dateStr.isEmpty) return getTranslatedText("unknown_date");
     try {
       final DateTime dateTime = DateTime.parse(dateStr);
       return DateFormat.yMMMMd(locale).format(dateTime);

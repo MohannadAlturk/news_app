@@ -96,7 +96,7 @@ class _NewsScreenState extends State<NewsScreen> {
 
                     final article = viewModel.articles[index];
                     final formattedDate = viewModel.formatDate(article['publishedAt'], locale: _currentLanguage);
-                    final category = article['category'] ?? 'General';
+                    final category = getTranslatedText(article["category"].toString().toLowerCase());
 
                     return GestureDetector(
                       onTap: () {
