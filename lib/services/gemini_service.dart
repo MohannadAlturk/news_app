@@ -10,11 +10,16 @@ class GeminiService {
   Future<String?> translateArticlesJson(String articlesJsonString) async {
     // Set up the prompt for translating JSON content
     String prompt = """
-Translate only the 'title' and 'description' fields in the following JSON content to ${jsonDecode(articlesJsonString)['targetLanguage']}.
-Do not add any additional double quotes within the text fields. If double quotes (") are necessary, replace them with single quotes (').
-Strictly maintain the JSON structure without adding, modifying, or removing any other JSON syntax.
+Translate only the 'title' and 'description' fields in the JSON content below into ${jsonDecode(articlesJsonString)['targetLanguage']} language.
+
+1. Translate only the text values of 'title' and 'description'. Do not change any other parts of the JSON.
+2. Do not use double quotes (") within translated text. Use single quotes (') if needed inside text fields.
+3. The JSON output should be fully formatted and ready to be parsed.
+
+Content:
 $articlesJsonString
 """;
+
     final model = GenerativeModel(
       model: 'gemini-1.5-flash',
       apiKey: apiKey,

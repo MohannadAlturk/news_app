@@ -5,27 +5,33 @@ class TranslationService {
   final GeminiService _geminiService = GeminiService();
 
   String sanitizeJson(String jsonString) {
-    // Escape double quotes within the 'title' and 'description' fields
-    jsonString = jsonString.replaceAllMapped(
-        RegExp(r'("title"\s*:\s*")(.*?)(")'), (match) {
-      final content = match[2]?.replaceAll('"', '\\"'); // Escape internal "
-      return '${match[1]}$content${match[3]}';
-    });
+    // Step 1: Remove all double quotes from the JSON string
+    jsonString = jsonString.replaceAll(RegExp(r'["“”„]'), '');
 
+    // Step 2: Re-add necessary double quotes around JSON structure
+    // Add quotes around "articles" key
     jsonString = jsonString.replaceAllMapped(
-        RegExp(r'("description"\s*:\s*")(.*?)(")'), (match) {
-      final content = match[2]?.replaceAll('"', '\\"'); // Escape internal "
-      return '${match[1]}$content${match[3]}';
-    });
+        RegExp(r'(\barticles\b)(\s*:\s*\[)'), (match) => '"${match[1]}"${match[2]}');
 
-    // Additional sanitization: remove control characters
-    jsonString = jsonString.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), ''); // Remove control characters
-    jsonString = jsonString.replaceAll(RegExp(r',\s*}'), '}'); // Remove trailing commas in objects
-    jsonString = jsonString.replaceAll(RegExp(r',\s*\]'), ']'); // Remove trailing commas in lists
-    jsonString = jsonString.trim(); // Trim whitespace
+    // Add quotes around "title" until it reaches "description"
+    jsonString = jsonString.replaceAllMapped(
+        RegExp(r'(\btitle\b)(\s*:\s*)(.*?)(?=,description)'), (match) => '"${match[1]}"${match[2]}"${match[3]?.trim()}"');
+
+    // Add quotes around "description" until it reaches the end of the object
+    jsonString = jsonString.replaceAllMapped(
+        RegExp(r'(\bdescription\b)(\s*:\s*)(.*?)(?=\})'), (match) => '"${match[1]}"${match[2]}"${match[3]?.trim()}"');
+
+    // Add quotes around "targetLanguage" and its value
+    jsonString = jsonString.replaceAllMapped(
+        RegExp(r'(\btargetLanguage\b)(\s*:\s*)([^{},\]\[]+)'), (match) => '"${match[1]}"${match[2]}"${match[3]?.trim()}"');
+
+    // Step 3: Final cleanup for JSON structure
+    // Remove any stray trailing commas
+    jsonString = jsonString.replaceAll(RegExp(r',\s*}'), '}');
+    jsonString = jsonString.replaceAll(RegExp(r',\s*\]'), ']');
+
     return jsonString;
   }
-
 
   Future<List<dynamic>?> translateArticles(List<dynamic> articles, String language) async {
     // Convert articles list to JSON format for translation

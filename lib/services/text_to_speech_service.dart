@@ -83,8 +83,6 @@ class TextToSpeechService {
       _lastEndPosition = 0;
       _progress = 0.0;
     }
-
-    // Set the language before speaking
     await _setLanguage(languageCode);
 
     await _speakFromPosition();
@@ -107,12 +105,6 @@ class TextToSpeechService {
         break;
       case 'de':
         await _flutterTts.setLanguage("de-DE");
-        break;
-      case 'bg':
-        await _flutterTts.setLanguage("bg-BG");
-        break;
-      case 'ar':
-        await _flutterTts.setLanguage("ar-SA");
         break;
       default:
         await _flutterTts.setLanguage("en-US");

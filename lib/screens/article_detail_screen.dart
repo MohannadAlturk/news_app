@@ -179,7 +179,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    if (viewModel.summary.isNotEmpty)
+                    if (viewModel.summary.isNotEmpty && (_currentLanguage == 'en' || _currentLanguage == 'de'))
                       TextToSpeechBar(
                         text: viewModel.summary,
                         playText: getTranslatedText('play', _currentLanguage),
