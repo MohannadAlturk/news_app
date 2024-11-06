@@ -77,12 +77,14 @@ class TextToSpeechService {
 
   }
 
-  Future<void> speak(String text, {bool isResuming = false}) async {
+  Future<void> speak(String text, {String languageCode = 'en', bool isResuming = false}) async {
     _originalText = text;
     if (!isResuming) {
       _lastEndPosition = 0;
       _progress = 0.0;
     }
+    await _setLanguage(languageCode);
+
     await _speakFromPosition();
     isPlaying = true;
     isPaused = false;
@@ -93,6 +95,20 @@ class TextToSpeechService {
       String remainingText = _originalText!.substring(_lastEndPosition);
       print("Speaking from position $_lastEndPosition");
       await _flutterTts.speak(remainingText);
+    }
+  }
+
+  Future<void> _setLanguage(String languageCode) async {
+    switch (languageCode) {
+      case 'en':
+        await _flutterTts.setLanguage("en-US");
+        break;
+      case 'de':
+        await _flutterTts.setLanguage("de-DE");
+        break;
+      default:
+        await _flutterTts.setLanguage("en-US");
+        print("Language code $languageCode not supported, defaulting to English.");
     }
   }
 

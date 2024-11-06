@@ -8,6 +8,9 @@ import 'package:news_app/screens/login_page.dart';
 import 'package:news_app/screens/news_screen.dart';
 import 'package:news_app/services/firestore_service.dart';
 import 'package:news_app/services/language_service.dart';
+import 'package:news_app/view_models/news_viewmodel.dart';
+import 'package:provider/provider.dart';
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,20 +21,30 @@ Future<void> main() async {
   FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
   await LanguageService.loadUserLanguage();
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => NewsViewModel()), // Provide NewsViewModel
+      ],
+      child: MyApp(navigatorKey: navigatorKey),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final GlobalKey<NavigatorState> navigatorKey;
+
+  const MyApp({super.key, required this.navigatorKey});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const AuthStateWrapper(),
+      home: AuthStateWrapper(),
     );
   }
 }
