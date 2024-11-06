@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 class NewsCard extends StatelessWidget {
   final Map<String, dynamic> article;
   final String formattedDate;
-  final String category; // New parameter for category
+  final String category;
+  final bool isFavorite;
+  final VoidCallback onFavoriteToggle; // Callback for toggling favorite status
 
   const NewsCard({
     super.key,
     required this.article,
     required this.formattedDate,
-    required this.category, // Initialize category
+    required this.category,
+    required this.isFavorite,
+    required this.onFavoriteToggle, // Inject the callback
   });
 
   @override
@@ -25,17 +29,15 @@ class NewsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Display category label
             Text(
-              category, // Display category
+              category,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Colors.blueAccent, // Style for category
+                color: Colors.blueAccent,
               ),
             ),
             const SizedBox(height: 5),
-            // Title of the article
             Text(
               article['title'] ?? 'No Title',
               style: const TextStyle(
@@ -54,7 +56,6 @@ class NewsCard extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: 12),
-            // Row for date, source, and favorite icon
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -86,11 +87,9 @@ class NewsCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {
-                    // Add to favorites logic
-                  },
-                  icon: const Icon(
-                    Icons.favorite_border,
+                  onPressed: onFavoriteToggle,
+                  icon: Icon(
+                    isFavorite ? Icons.delete : Icons.favorite_border,
                     color: Colors.black54,
                   ),
                 ),
