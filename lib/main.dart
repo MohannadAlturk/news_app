@@ -7,9 +7,9 @@ import 'package:news_app/screens/interests_screen.dart';
 import 'package:news_app/screens/login_page.dart';
 import 'package:news_app/screens/news_screen.dart';
 import 'package:news_app/services/firestore_service.dart';
+import 'package:news_app/services/language_service.dart';
 import 'package:news_app/view_models/news_viewmodel.dart';
 import 'package:provider/provider.dart';
-
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
@@ -19,6 +19,7 @@ Future<void> main() async {
   await Firebase.initializeApp();
 
   FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
+  await LanguageService.loadUserLanguage();
 
   runApp(
     MultiProvider(
@@ -66,7 +67,6 @@ class AuthStateWrapper extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         } else if (snapshot.hasData) {
-          // Check if interests are already saved
           return FutureBuilder<bool>(
             future: _hasSavedInterests(),
             builder: (context, interestSnapshot) {
@@ -75,16 +75,13 @@ class AuthStateWrapper extends StatelessWidget {
                   body: Center(child: CircularProgressIndicator()),
                 );
               } else if (interestSnapshot.data == true) {
-                // If interests are saved, navigate to NewsScreen
                 return const NewsScreen();
               } else {
-                // If no interests are saved, navigate to InterestsScreen
                 return const InterestsScreen();
               }
             },
           );
         } else {
-          // If no user is logged in, show LoginPage
           return const LoginPage();
         }
       },

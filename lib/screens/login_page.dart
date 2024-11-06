@@ -36,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _loadLanguage() async {
     String languageCode = await LanguageService.getLanguageCode();
+    await LanguageService.loadLanguage(languageCode);
     setState(() {
       _currentLanguage = languageCode;
     });
@@ -68,16 +69,16 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         switch (e.code) {
           case 'user-not-found':
-            errorMessage = getTranslatedText('no_account_found', _currentLanguage);
+            errorMessage = getTranslatedText('no_account_found');
             break;
           case 'wrong-password':
-            errorMessage = getTranslatedText('incorrect_password', _currentLanguage);
+            errorMessage = getTranslatedText('incorrect_password');
             break;
           case 'invalid-email':
-            errorMessage = getTranslatedText('badly_formatted_email', _currentLanguage);
+            errorMessage = getTranslatedText('badly_formatted_email');
             break;
           default:
-            errorMessage = getTranslatedText('login_failed', _currentLanguage);
+            errorMessage = getTranslatedText('login_failed');
         }
       });
     }
@@ -92,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       },
       child: Text(
-        getTranslatedText('forgot_password', _currentLanguage),
+        getTranslatedText('forgot_password'),
         style: const TextStyle(color: Colors.blue),
       ),
     );
@@ -107,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       },
       child: Text(
-        getTranslatedText('register_instead', _currentLanguage),
+        getTranslatedText('register_instead'),
         style: const TextStyle(color: Colors.blue),
       ),
     );
@@ -120,15 +121,15 @@ class _LoginPageState extends State<LoginPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          TitleWidget(title: getTranslatedText('login', _currentLanguage)),
+          TitleWidget(title: getTranslatedText('login')),
           const SizedBox(height: 20),
           EntryFieldWidget(
-            title: 'Email',
+            title: getTranslatedText('email'),
             controller: _controllerEmail,
           ),
           const SizedBox(height: 10),
           EntryFieldWidget(
-            title: 'Password',
+            title: getTranslatedText('password'),
             controller: _controllerPassword,
             obscureText: !_isPasswordVisible,
             suffixIcon: IconButton(
@@ -147,6 +148,8 @@ class _LoginPageState extends State<LoginPage> {
           SubmitButtonWidget(
             isLogin: true,
             onPressed: _signIn,
+            loginText: getTranslatedText('login'),
+            registerText: getTranslatedText('register'),
           ),
           _buildForgotPasswordButton(),
           _buildRegisterInsteadButton(),
@@ -155,7 +158,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _onLanguageChanged(String newLanguage) {
+  void _onLanguageChanged(String newLanguage) async {
+    await LanguageService.loadLanguage(newLanguage);
     setState(() {
       _currentLanguage = newLanguage;
     });
@@ -169,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
         title: Center(
-          child: TitleWidget(title: getTranslatedText('news_app', _currentLanguage)),
+          child: TitleWidget(title: getTranslatedText('news_app')),
         ),
         automaticallyImplyLeading: false,
       ),
@@ -186,7 +190,8 @@ class _LoginPageState extends State<LoginPage> {
               bottom: 16,
               right: 16,
               child: LanguageSelectorWidget(
-                onLanguageChanged: _onLanguageChanged, // Pass the callback to update language
+                onLanguageChanged: _onLanguageChanged,
+                currentLanguage: LanguageService.getLanguageCode(),
               ),
             ),
           ],
@@ -195,8 +200,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  String getTranslatedText(String key, String languageCode) {
-    // Placeholder function: Implement translation retrieval here using an external file or localization package.
-    return key;
+  String getTranslatedText(String key) {
+    return LanguageService.translate(key);
   }
 }

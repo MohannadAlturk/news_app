@@ -5,7 +5,6 @@ import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/message_widget.dart';
 import 'package:news_app/services/language_service.dart';
-import '../widgets/language_selector_widget.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -37,11 +36,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: _controllerEmail.text);
       setState(() {
-        message = getTranslatedText('password_reset_sent', _currentLanguage);
+        message = getTranslatedText('password_reset_sent');
       });
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = getTranslatedText(e.code, _currentLanguage) ?? e.message;
+        errorMessage = e.code ?? e.message;
       });
     }
   }
@@ -59,7 +58,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: Center(
-          child: TitleWidget(title: getTranslatedText('news_app', _currentLanguage)),
+          child: TitleWidget(title: getTranslatedText('news_app')),
         ),
         automaticallyImplyLeading: false,
       ),
@@ -75,25 +74,25 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  TitleWidget(title: getTranslatedText('forgot_password', _currentLanguage)),
+                  TitleWidget(title: getTranslatedText('forgot_password')),
                   const SizedBox(height: 20),
                   EntryFieldWidget(
-                    title: getTranslatedText('email', _currentLanguage),
+                    title: getTranslatedText('email'),
                     controller: _controllerEmail,
                   ),
                   MessageWidget(message: message),
                   ErrorMessageWidget(errorMessage: errorMessage),
                   ElevatedButton(
                     onPressed: resetPassword,
-                    child: Text(getTranslatedText('reset_password', _currentLanguage)),
+                    child: Text(getTranslatedText('reset_password')),
                   ),
                   const SizedBox(height: 10),
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(context); // Navigate back to the previous screen (Login screen)
+                      Navigator.pop(context);
                     },
                     child: Text(
-                      getTranslatedText('cancel', _currentLanguage),
+                      getTranslatedText('cancel'),
                       style: const TextStyle(color: Colors.blue),
                     ),
                   ),
@@ -106,8 +105,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
-  String getTranslatedText(String key, String languageCode) {
-    // Placeholder function: Implement translation retrieval here using an external file or localization package.
-    return key;
+  String getTranslatedText(String key) {
+    return LanguageService.translate(key);
   }
 }

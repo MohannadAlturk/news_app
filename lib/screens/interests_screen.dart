@@ -67,7 +67,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Text(
-          getTranslatedText('select_your_interests', _currentLanguage),
+          getTranslatedText('select_your_interests'),
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -92,7 +92,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
             final isSelected = _selectedInterests.contains(interest);
 
             return InterestTile(
-              interest: getTranslatedText(interest.toLowerCase(), _currentLanguage),
+              interest: getTranslatedText(interest.toLowerCase()),
               icon: icon,
               isSelected: isSelected,
               onTap: () => _toggleInterest(interest),
@@ -108,8 +108,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
     );
   }
 
-  String getTranslatedText(String key, String languageCode) {
-    // Placeholder function to simulate translation retrieval
-    return key;
+  String getTranslatedText(String key) {
+    return LanguageService.translate(key);
   }
 }

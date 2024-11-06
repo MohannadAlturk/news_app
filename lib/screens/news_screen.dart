@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 import '/view_models/news_viewmodel.dart';
 import '/widgets/news_card.dart';
 import '/widgets/bottom_navbar.dart';
-import 'package:news_app/services/language_service.dart';
 import 'article_detail_screen.dart';
+import 'package:news_app/services/language_service.dart';
+
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -24,7 +25,9 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Future<void> _loadLanguage() async {
+    await LanguageService.loadUserLanguage();
     String languageCode = await LanguageService.getLanguageCode();
+    await LanguageService.loadLanguage(languageCode);
     setState(() {
       _currentLanguage = languageCode;
     });
@@ -45,7 +48,7 @@ class _NewsScreenState extends State<NewsScreen> {
         appBar: AppBar(
           backgroundColor: Colors.blue,
           title: Text(
-            getTranslatedText('your_news', _currentLanguage),
+            getTranslatedText('your_news'),
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -63,7 +66,7 @@ class _NewsScreenState extends State<NewsScreen> {
             return RefreshIndicator(
               onRefresh: () => viewModel.fetchNewsArticles(refresh: true, language: _currentLanguage),
               child: Container(
-                color: Colors.white, // Ensure body content also has a white background
+                color: Colors.white,
                 child: ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.all(8.0),
@@ -82,7 +85,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                   viewModel.fetchMoreArticles(language: _currentLanguage);
                                 },
                                 child: Text(
-                                  getTranslatedText('load_more', _currentLanguage),
+                                  getTranslatedText('load_more'),
                                 ),
                               ),
                             ),
@@ -122,8 +125,7 @@ class _NewsScreenState extends State<NewsScreen> {
       );
   }
 
-  String getTranslatedText(String key, String languageCode) {
-    // Placeholder function for retrieving translations.
-    return key;
+  String getTranslatedText(String key) {
+    return LanguageService.translate(key);
   }
 }

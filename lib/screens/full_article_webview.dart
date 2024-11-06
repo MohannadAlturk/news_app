@@ -37,7 +37,7 @@ class _FullArticleWebViewState extends State<FullArticleWebView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(getTranslatedText('full_article', _currentLanguage)),
+        title: Text(getTranslatedText('full_article')),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -52,7 +52,7 @@ class _FullArticleWebViewState extends State<FullArticleWebView> {
           if (_hasError)
             Center(
               child: Text(
-                getTranslatedText('failed_to_load', _currentLanguage),
+                getTranslatedText('failed_to_load'),
                 style: const TextStyle(fontSize: 18, color: Colors.red),
                 textAlign: TextAlign.center,
               ),
@@ -66,12 +66,12 @@ class _FullArticleWebViewState extends State<FullArticleWebView> {
               onLoadStart: (controller, url) {
                 setState(() {
                   _hasError = false;
-                  _progress = 0.1; // Start the progress at 10%
+                  _progress = 0.1;
                 });
               },
               onLoadStop: (controller, url) async {
                 setState(() {
-                  _progress = 1.0; // Page loaded completely
+                  _progress = 1.0;
                 });
               },
               onProgressChanged: (controller, progress) {
@@ -89,14 +89,13 @@ class _FullArticleWebViewState extends State<FullArticleWebView> {
               },
             ),
           if (_progress < 1.0)
-            LinearProgressIndicator(value: _progress), // Show progress bar
+            LinearProgressIndicator(value: _progress),
         ],
       ),
     );
   }
 
-  String getTranslatedText(String key, String languageCode) {
-    // Placeholder function: Implement translation retrieval here using an external file or localization package.
-    return key;
+  String getTranslatedText(String key) {
+    return LanguageService.translate(key);
   }
 }
