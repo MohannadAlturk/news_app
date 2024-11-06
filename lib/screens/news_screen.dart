@@ -28,6 +28,8 @@ class _NewsScreenState extends State<NewsScreen> {
     setState(() {
       _currentLanguage = languageCode;
     });
+    // Fetch articles with the selected language
+    Provider.of<NewsViewModel>(context, listen: false).fetchNewsArticles(language: _currentLanguage);
   }
 
   @override
@@ -38,9 +40,7 @@ class _NewsScreenState extends State<NewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => NewsViewModel()..fetchNewsArticles(),
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.white, // Set scaffold background color to white
         appBar: AppBar(
           backgroundColor: Colors.blue,
@@ -61,7 +61,7 @@ class _NewsScreenState extends State<NewsScreen> {
             }
 
             return RefreshIndicator(
-              onRefresh: () => viewModel.fetchNewsArticles(refresh: true),
+              onRefresh: () => viewModel.fetchNewsArticles(refresh: true, language: _currentLanguage),
               child: Container(
                 color: Colors.white, // Ensure body content also has a white background
                 child: ListView.builder(
@@ -79,7 +79,7 @@ class _NewsScreenState extends State<NewsScreen> {
                               padding: const EdgeInsets.all(16.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  viewModel.fetchMoreArticles();
+                                  viewModel.fetchMoreArticles(language: _currentLanguage);
                                 },
                                 child: Text(
                                   getTranslatedText('load_more', _currentLanguage),
@@ -92,7 +92,7 @@ class _NewsScreenState extends State<NewsScreen> {
                     }
 
                     final article = viewModel.articles[index];
-                    final formattedDate = viewModel.formatDate(article['publishedAt']);
+                    final formattedDate = viewModel.formatDate(article['publishedAt'], locale: _currentLanguage);
                     final category = article['category'] ?? 'General';
 
                     return GestureDetector(
@@ -119,8 +119,7 @@ class _NewsScreenState extends State<NewsScreen> {
           },
         ),
         bottomNavigationBar: const BottomNavBar(currentIndex: 0),
-      ),
-    );
+      );
   }
 
   String getTranslatedText(String key, String languageCode) {

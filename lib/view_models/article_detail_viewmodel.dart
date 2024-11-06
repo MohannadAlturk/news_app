@@ -12,11 +12,16 @@ class ArticleDetailViewModel extends ChangeNotifier {
   bool _isLoading = true;
   bool _isPlaying = false;
   double _ttsProgress = 0.0;
+  String _currentLanguage = 'en';
 
   String get summary => _summary;
   bool get isLoading => _isLoading;
   bool get isPlaying => _isPlaying;
   double get ttsProgress => ttsService.progress;
+
+  bool _isRtl = false; // Flag to determine if RTL formatting is needed
+
+  bool get isRtl => _isRtl; // Getter for UI to use
 
   ArticleDetailViewModel(this.ttsService) {
     // Set up progress updates from the TTS service
@@ -29,13 +34,21 @@ class ArticleDetailViewModel extends ChangeNotifier {
     });
   }
 
-  Future<void> fetchAndSummarizeArticle(String articleUrl) async {
+  Future<void> fetchAndSummarizeArticle(String articleUrl, {String language = 'en'}) async {
     try {
       _isLoading = true;
+      _currentLanguage = language;
+      _isRtl = (language == 'ar'); // Set RTL flag for Arabic
       notifyListeners();
 
       final scrapedContent = await _scrapeArticleContent(articleUrl);
-      _summary = await _geminiService.summarizeArticle(scrapedContent) ?? 'No summary available.';
+
+      if (language != "en") {
+        _summary = await _geminiService.summarizeAndTranslateArticle(scrapedContent, language: language) ?? 'No summary available.';
+      } else {
+        _summary = await _geminiService.summarizeArticle(scrapedContent) ?? 'No summary available.';
+      }
+
     } catch (error) {
       _summary = 'Failed to load article summary.';
       debugPrint('Error scraping or summarizing article: $error');
@@ -53,7 +66,7 @@ class ArticleDetailViewModel extends ChangeNotifier {
       await ttsService.pause();
     } else if (_summary.isNotEmpty) {
       if (_ttsProgress == 0.0 && !ttsService.isPaused) {
-        await ttsService.speak(_summary);
+        await ttsService.speak(_summary, languageCode: _currentLanguage);
       } else {
         await ttsService.resume();
       }
