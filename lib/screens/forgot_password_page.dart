@@ -6,6 +6,8 @@ import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/message_widget.dart';
 import 'package:news_app/services/language_service.dart';
 
+import '../widgets/submit_button_widget.dart';
+
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
 
@@ -82,9 +84,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                   MessageWidget(message: message),
                   ErrorMessageWidget(errorMessage: errorMessage),
-                  ElevatedButton(
+                  SubmitButtonWidget(
+                    isLogin: false,
                     onPressed: resetPassword,
-                    child: Text(getTranslatedText('reset_password')),
+                    loginText: getTranslatedText('login'),
+                    registerText: getTranslatedText('reset_password'),
                   ),
                   const SizedBox(height: 10),
                   TextButton(

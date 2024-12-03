@@ -56,6 +56,7 @@ class _NewsScreenState extends State<NewsScreen> {
             ),
           ),
           centerTitle: true,
+          automaticallyImplyLeading: false,
         ),
         body: Consumer<NewsViewModel>(
           builder: (context, viewModel, _) {
