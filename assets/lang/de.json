@@ -55,8 +55,10 @@
   "registration_failed": "Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
   "login_instead": "Bereits ein Konto? Anmelden",
   "load_more": "Mehr laden",
+  "invalid-email": "Ungültige E-Mail",
   "favorites_title": "Deine Favoriten",
   "no_favorites": "Noch keine Favoriten hinzugefügt",
   "added_to_favorites": "Zu Favoriten hinzugefügt",
-  "removed_from_favorites": "Aus Favoriten entfernt"
+  "removed_from_favorites": "Aus Favoriten entfernt",
+  "default_error": "Etwas ist schief gelaufen. Versuchen Sie es erneut."
 }

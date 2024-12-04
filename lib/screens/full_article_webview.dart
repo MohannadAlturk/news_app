@@ -37,7 +37,15 @@ class _FullArticleWebViewState extends State<FullArticleWebView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(getTranslatedText('full_article')),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          getTranslatedText('full_article'),
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -46,6 +54,9 @@ class _FullArticleWebViewState extends State<FullArticleWebView> {
             },
           )
         ],
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+
       ),
       body: Stack(
         children: [

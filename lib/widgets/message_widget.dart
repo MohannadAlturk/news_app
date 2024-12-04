@@ -10,6 +10,15 @@ class MessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(message == '' ? '' : '$message');
+    return message == null || message!.isEmpty
+        ? const SizedBox.shrink()
+        : Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        message!,
+        style: const TextStyle(color: Colors.black),
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 }

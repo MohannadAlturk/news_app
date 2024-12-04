@@ -55,8 +55,10 @@
   "registration_failed": "Registration failed. Please try again.",
   "login_instead": "Already have an account? Log in",
   "load_more": "Load More",
+  "invalid-email": "Invalid email",
   "favorites_title": "Your Favorites",
   "no_favorites": "No Favorites added yet",
   "added_to_favorites": "Added to Favorites",
-  "removed_from_favorites": "Removed from Favorites"
+  "removed_from_favorites": "Removed from Favorites",
+  "default_error": "Something went wrong! Try again."
 }

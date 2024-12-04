@@ -64,24 +64,25 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text(
-          getTranslatedText('your_news'),
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        backgroundColor: Colors.white, // Set scaffold background color to white
+        appBar: AppBar(
+          backgroundColor: Colors.blue,
+          title: Text(
+            getTranslatedText('your_news'),
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
         ),
-        centerTitle: true,
-      ),
-      body: Consumer<NewsViewModel>(
-        builder: (context, viewModel, _) {
-          if (viewModel.isLoading && viewModel.articles.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        body: Consumer<NewsViewModel>(
+          builder: (context, viewModel, _) {
+            if (viewModel.isLoading && viewModel.articles.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
           return RefreshIndicator(
             onRefresh: () => viewModel.fetchNewsArticles(refresh: true, language: _currentLanguage),

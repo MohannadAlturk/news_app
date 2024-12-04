@@ -16,9 +16,27 @@ class SubmitButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: Text(isLogin ? loginText : registerText),
+    return SizedBox(
+      width: double.infinity, // Knopf nimmt die volle Breite ein
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue, // Primärfarbe
+          foregroundColor: Colors.white, // Textfarbe
+          padding: const EdgeInsets.symmetric(vertical: 16), // Höhe des Buttons
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8), // Abgerundete Ecken
+          ),
+          elevation: 0, // Flacher Button ohne Schatten
+        ),
+        child: Text(
+          isLogin ? loginText : registerText,
+          style: const TextStyle(
+            fontSize: 16, // Konsistente Schriftgröße
+            fontWeight: FontWeight.bold, // Fetter Text für Klarheit
+          ),
+        ),
+      ),
     );
   }
 }

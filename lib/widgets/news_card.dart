@@ -24,76 +24,103 @@ class NewsCard extends StatelessWidget {
       ),
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15), // Ensures the image respects the card's rounded corners
+        child: Stack(
           children: [
-            Text(
-              category,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              article['title'] ?? 'No Title',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 10),
-            if (article['description'] != null)
-              Text(
-                article['description'] ?? 'No description available',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
+            // Background Image
+            if (article['urlToImage'] != null)
+              Positioned.fill(
+                child: Image.network(
+                  article['urlToImage'],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Colors.grey.shade200,
+                  ), // Placeholder if the image fails to load
                 ),
               ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Row(
+
+            // Darker semi-transparent overlay
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.7), // Increased opacity for better text visibility
+              ),
+            ),
+
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    category,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // Use white for text visibility
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    article['title'] ?? 'No Title',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (article['description'] != null)
+                    Text(
+                      article['description'] ?? 'No description available',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
-                        child: Text(
-                          formattedDate,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.black54,
-                          ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                formattedDate,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: Text(
+                                article['source']?['name'] ?? 'Unknown Source',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white70,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 5),
-                      Flexible(
-                        child: Text(
-                          article['source']?['name'] ?? 'Unknown Source',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.black54,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          maxLines: 1,
+                      IconButton(
+                        onPressed: onFavoriteToggle,
+                        icon: Icon(
+                          isFavorite ? Icons.delete : Icons.favorite_border,
+                          color: Colors.white,
                         ),
                       ),
                     ],
                   ),
-                ),
-                IconButton(
-                  onPressed: onFavoriteToggle,
-                  icon: Icon(
-                    isFavorite ? Icons.delete : Icons.favorite_border,
-                    color: Colors.black54,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

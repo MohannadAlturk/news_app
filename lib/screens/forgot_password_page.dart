@@ -6,6 +6,8 @@ import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/message_widget.dart';
 import 'package:news_app/services/language_service.dart';
 
+import '../widgets/submit_button_widget.dart';
+
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
 
@@ -17,22 +19,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   String? errorMessage = '';
   String? message = '';
   final TextEditingController _controllerEmail = TextEditingController();
-  String _currentLanguage = 'en';
 
   @override
   void initState() {
     super.initState();
-    _loadLanguage();
   }
 
-  Future<void> _loadLanguage() async {
-    String languageCode = await LanguageService.getLanguageCode();
-    setState(() {
-      _currentLanguage = languageCode;
-    });
-  }
 
   Future<void> resetPassword() async {
+    setState(() {
+      errorMessage = null;
+      message = null;
+    });
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: _controllerEmail.text);
       setState(() {
@@ -40,16 +38,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       });
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.code ?? e.message;
+        print(e);
+        errorMessage = getTranslatedText('invalid-email');
       });
     }
   }
 
-  void _onLanguageChanged(String newLanguage) {
-    setState(() {
-      _currentLanguage = newLanguage;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +76,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                   MessageWidget(message: message),
                   ErrorMessageWidget(errorMessage: errorMessage),
-                  ElevatedButton(
+                  const SizedBox(height: 10),
+                  SubmitButtonWidget(
+                    isLogin: false,
                     onPressed: resetPassword,
-                    child: Text(getTranslatedText('reset_password')),
+                    loginText: getTranslatedText('login'),
+                    registerText: getTranslatedText('reset_password'),
                   ),
                   const SizedBox(height: 10),
                   TextButton(
@@ -92,7 +89,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       Navigator.pop(context);
                     },
                     child: Text(
-                      getTranslatedText('cancel'),
+                      getTranslatedText('login'),
                       style: const TextStyle(color: Colors.blue),
                     ),
                   ),
