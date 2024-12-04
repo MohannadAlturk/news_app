@@ -15,7 +15,6 @@ class InterestsScreen extends StatefulWidget {
 class _InterestsScreenState extends State<InterestsScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   List<String> _selectedInterests = [];
-  String _currentLanguage = 'en';
   bool isFirstLogin = false;
 
   final List<Map<String, dynamic>> _interestsOptions = [
@@ -33,20 +32,12 @@ class _InterestsScreenState extends State<InterestsScreen> {
     super.initState();
     isFirstLogin = widget.isFirstLogin;
     _loadUserInterests();
-    _loadLanguage();
   }
 
   Future<void> _loadUserInterests() async {
     final interests = await _firestoreService.getUserInterests();
     setState(() {
       _selectedInterests = interests;
-    });
-  }
-
-  Future<void> _loadLanguage() async {
-    String languageCode = await LanguageService.getLanguageCode();
-    setState(() {
-      _currentLanguage = languageCode;
     });
   }
 
@@ -69,7 +60,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.blue,
         title: Text(
           getTranslatedText('select_your_interests'),

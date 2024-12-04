@@ -36,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _loadLanguage() async {
     String languageCode = await LanguageService.getLanguageCode();
     await LanguageService.loadLanguage(languageCode);
+    print(_currentLanguage);
     setState(() {
       _currentLanguage = languageCode;
     });
@@ -158,7 +159,6 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
 
   void _onLanguageChanged(String newLanguage) async {
     await LanguageService.loadLanguage(newLanguage);

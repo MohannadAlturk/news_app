@@ -18,9 +18,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   String? errorMessage = '';
 
-  bool _isCurrentPasswordVisible = false;
-  bool _isNewPasswordVisible = false;
-
   Future<void> _changePassword() async {
     try {
       final user = FirebaseAuth.instance.currentUser!;

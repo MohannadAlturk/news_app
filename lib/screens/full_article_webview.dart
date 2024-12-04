@@ -18,26 +18,17 @@ class _FullArticleWebViewState extends State<FullArticleWebView> {
   late InAppWebViewController _webViewController;
   double _progress = 0;
   bool _hasError = false;
-  String _currentLanguage = 'en';
 
   @override
   void initState() {
     super.initState();
-    _loadLanguage();
-  }
-
-  Future<void> _loadLanguage() async {
-    String languageCode = await LanguageService.getLanguageCode();
-    setState(() {
-      _currentLanguage = languageCode;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           getTranslatedText('full_article'),
           style: const TextStyle(

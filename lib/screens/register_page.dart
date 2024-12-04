@@ -19,22 +19,12 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   String? errorMessage = '';
-  bool _isPasswordVisible = false;
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
-  String _currentLanguage = 'en';
 
   @override
   void initState() {
     super.initState();
-    _loadLanguage();
-  }
-
-  Future<void> _loadLanguage() async {
-    String languageCode = await LanguageService.getLanguageCode();
-    setState(() {
-      _currentLanguage = languageCode;
-    });
   }
 
   Future<void> _createUser() async {

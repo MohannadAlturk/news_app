@@ -13,7 +13,7 @@ class NewsViewModel extends ChangeNotifier {
   final TranslationService _translationService = TranslationService();
 
   List<dynamic> _articles = [];
-  List<dynamic> _queryArticles = [];
+  final List<dynamic> _queryArticles = [];
   List<dynamic> _allQueryArticles = []; // Holds all fetched articles for the query
 
   bool _isLoading = true;
