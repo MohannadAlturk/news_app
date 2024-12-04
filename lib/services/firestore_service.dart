@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class FirestoreService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -75,9 +76,26 @@ class FirestoreService {
     return [];
   }
 
-  Future<void> addArticleToFavorites(Map<String, dynamic> article) async {
+
+  Future<void> addArticleToFavorites(Map<String, dynamic> article, String locale) async {
     User? user = _auth.currentUser;
     if (user == null) throw Exception("User not logged in");
+
+    // Format the date before saving
+    String? formattedDate;
+    if (article['publishedAt'] != null) {
+      try {
+        DateTime dateTime = DateTime.parse(article['publishedAt']);
+        formattedDate = DateFormat.yMMMMd(locale).format(dateTime);
+      } catch (e) {
+        formattedDate = 'Invalid date';
+      }
+    } else {
+      formattedDate = 'Unknown date';
+    }
+
+    // Add the formatted date to the article map
+    article['formattedDate'] = formattedDate;
 
     DocumentReference userDoc = _firestore.collection('users').doc(user.uid);
     await userDoc.set({

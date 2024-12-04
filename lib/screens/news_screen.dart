@@ -41,7 +41,7 @@ class _NewsScreenState extends State<NewsScreen> {
       await _firestoreService.removeArticleFromFavorites(article);
       _showSnackbar(getTranslatedText('removed_from_favorites'));
     } else {
-      await _firestoreService.addArticleToFavorites(article);
+      await _firestoreService.addArticleToFavorites(article, _currentLanguage);
       _showSnackbar(getTranslatedText('added_to_favorites'));
     }
   }

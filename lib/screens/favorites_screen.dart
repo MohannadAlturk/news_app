@@ -79,7 +79,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             itemCount: favoriteArticles.length,
             itemBuilder: (context, index) {
               final article = favoriteArticles[index];
-              final formattedDate = article['publishedAt'] ?? '';
+              final formattedDate = article['formattedDate'] ?? '';
               final category = getTranslatedText(article["category"].toString().toLowerCase());
 
               return GestureDetector(
