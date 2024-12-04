@@ -12,6 +12,7 @@ import 'package:news_app/screens/forgot_password_page.dart';
 import 'package:news_app/widgets/language_selector_widget.dart';
 
 import '../services/firestore_service.dart';
+import '../widgets/input_field_widget.dart';
 import 'news_screen.dart';
 
 class LoginPage extends StatefulWidget {
@@ -23,7 +24,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   String? errorMessage = '';
-  bool _isPasswordVisible = false;
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
   String _currentLanguage = 'en';
@@ -115,6 +115,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildForm() {
+    final passwordVisibilityNotifier = ValueNotifier<bool>(true); // Default to obscure
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -123,25 +124,26 @@ class _LoginPageState extends State<LoginPage> {
         children: <Widget>[
           TitleWidget(title: getTranslatedText('login')),
           const SizedBox(height: 20),
-          EntryFieldWidget(
-            title: getTranslatedText('email'),
+          InputFieldWidget(
             controller: _controllerEmail,
+            hintText: getTranslatedText('email'),
+            icon: Icons.email,
+            onIconPressed: () {}, // No specific functionality needed
+            onSubmitted: (_) {}, // Optional submit behavior
+            obscureTextNotifier: ValueNotifier<bool>(false), // Email field doesn't require obscure text
           ),
           const SizedBox(height: 10),
-          EntryFieldWidget(
-            title: getTranslatedText('password'),
+          InputFieldWidget(
             controller: _controllerPassword,
-            obscureText: !_isPasswordVisible,
-            suffixIcon: IconButton(
-              icon: Icon(
-                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isPasswordVisible = !_isPasswordVisible;
-                });
-              },
-            ),
+            hintText: getTranslatedText('password'),
+            icon: passwordVisibilityNotifier.value
+                ? Icons.visibility
+                : Icons.visibility_off,
+            onIconPressed: () {
+              passwordVisibilityNotifier.value = !passwordVisibilityNotifier.value; // Toggle visibility
+            },
+            obscureTextNotifier: passwordVisibilityNotifier, // Pass notifier
+            onSubmitted: (_) {}, // Optional submit behavior
           ),
           const SizedBox(height: 10),
           ErrorMessageWidget(errorMessage: errorMessage),
@@ -157,6 +159,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
 
   void _onLanguageChanged(String newLanguage) async {
     await LanguageService.loadLanguage(newLanguage);

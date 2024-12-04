@@ -195,6 +195,12 @@ class NewsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearArticles() {
+    _articles.clear();
+    _isLoading = true; // Ensure loading spinner shows
+    notifyListeners();
+  }
+
 
   Future<void> fetchMoreArticlesByQuery(String language) async {
     if (_isFetchingMore) return;

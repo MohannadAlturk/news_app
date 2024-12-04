@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../widgets/input_field_widget.dart';
 import '/view_models/news_viewmodel.dart';
 import '/widgets/news_card.dart';
 import '/widgets/bottom_navbar.dart';
@@ -86,21 +87,17 @@ class _SearchScreenState extends State<SearchScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: TextField(
+                child: InputFieldWidget(
                   controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: getTranslatedText("search_query_placeholder"),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.search),
-                      onPressed: () {
-                        _performSearch(viewModel, _searchController.text);
-                      },
-                    ),
-                  ),
+                  hintText: getTranslatedText("search_query_placeholder"),
+                  icon: Icons.search,
+                  onIconPressed: () {
+                    _performSearch(viewModel, _searchController.text);
+                  },
                   onSubmitted: (query) {
                     _performSearch(viewModel, query);
                   },
+                  obscureTextNotifier: ValueNotifier<bool>(false),
                 ),
               ),
               Expanded(
@@ -114,6 +111,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 )
                     : RefreshIndicator(
+                  color: Colors.blue,
                   onRefresh: () async {
                     await viewModel.fetchArticlesByQuery(
                       _searchController.text,
@@ -129,7 +127,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         return Column(
                           children: [
                             if (viewModel.isFetchingMore)
-                              const Center(child: CircularProgressIndicator())
+                              const Center(
+                                child: CircularProgressIndicator()
+                              )
                             else if (viewModel.hasMoreQueryArticles)
                               Padding(
                                 padding: const EdgeInsets.all(16.0),

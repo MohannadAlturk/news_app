@@ -7,11 +7,17 @@ import 'package:news_app/services/language_service.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
+  final VoidCallback? onNewsTabTapped; // Callback for News reload
 
-  const BottomNavBar({super.key, this.currentIndex = 0});
+  const BottomNavBar({super.key, this.currentIndex = 0, this.onNewsTabTapped});
 
   void _onItemTapped(BuildContext context, int index) {
-    if (index == currentIndex) return; // Avoid reloading the same page
+    if (index == currentIndex) {
+      if (index == 0 && onNewsTabTapped != null) {
+        onNewsTabTapped!(); // Trigger reload if on the News tab
+      }
+      return;
+    }
     switch (index) {
       case 0:
         Navigator.pushReplacement(
@@ -28,13 +34,13 @@ class BottomNavBar extends StatelessWidget {
       case 2:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SettingsScreen()),
+          MaterialPageRoute(builder: (context) => const SearchScreen()),
         );
         break;
       case 3:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SearchScreen()),
+          MaterialPageRoute(builder: (context) => const SettingsScreen()),
         );
         break;
     }
@@ -43,15 +49,14 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      items:  [
-        BottomNavigationBarItem(icon: Icon(Icons.menu), label: getTranslatedText("news")),
-        BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: getTranslatedText("favorites")),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: getTranslatedText("settings")),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: getTranslatedText("search")),
+      items: [
+        BottomNavigationBarItem(icon: const Icon(Icons.menu), label: LanguageService.translate("news")),
+        BottomNavigationBarItem(icon: const Icon(Icons.bookmark), label: LanguageService.translate("favorites")),
+        BottomNavigationBarItem(icon: const Icon(Icons.search), label: LanguageService.translate("search")),
+        BottomNavigationBarItem(icon: const Icon(Icons.settings), label: LanguageService.translate("settings")),
       ],
       currentIndex: currentIndex,
-      backgroundColor: Colors.white, // Ensure uniform background color
-      //elevation: 0, // Remove shadow for a clean look
+      backgroundColor: Colors.white,
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.black45,
       selectedIconTheme: const IconThemeData(size: 24),
@@ -59,11 +64,8 @@ class BottomNavBar extends StatelessWidget {
       showSelectedLabels: true,
       showUnselectedLabels: true,
       onTap: (index) => _onItemTapped(context, index),
-      type: BottomNavigationBarType.fixed, // Prevent shifting behavior
+      type: BottomNavigationBarType.fixed,
     );
   }
-
-  String getTranslatedText(String key) {
-    return LanguageService.translate(key);
-  }
 }
+

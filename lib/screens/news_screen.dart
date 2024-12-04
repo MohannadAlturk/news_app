@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../widgets/load_more_button_widget.dart';
 import '/view_models/news_viewmodel.dart';
 import '/widgets/news_card.dart';
 import '/widgets/bottom_navbar.dart';
@@ -18,11 +19,21 @@ class _NewsScreenState extends State<NewsScreen> {
   final ScrollController _scrollController = ScrollController();
   final FirestoreService _firestoreService = FirestoreService();
   String _currentLanguage = 'en';
+  bool _shouldReload = false;
 
   @override
   void initState() {
     super.initState();
     _loadLanguage();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_shouldReload) {
+      _reloadArticles();
+      _shouldReload = false;
+    }
   }
 
   Future<void> _loadLanguage() async {
@@ -32,7 +43,13 @@ class _NewsScreenState extends State<NewsScreen> {
     setState(() {
       _currentLanguage = languageCode;
     });
-    Provider.of<NewsViewModel>(context, listen: false).fetchNewsArticles(language: _currentLanguage);
+    _reloadArticles();
+  }
+
+  Future<void> _reloadArticles() async {
+    final viewModel = Provider.of<NewsViewModel>(context, listen: false);
+    viewModel.clearArticles(); // Clear current articles
+    await viewModel.fetchNewsArticles(language: _currentLanguage);
   }
 
   Future<void> _onFavoriteToggle(Map<String, dynamic> article) async {
@@ -61,28 +78,43 @@ class _NewsScreenState extends State<NewsScreen> {
     super.dispose();
   }
 
+  void _triggerReload() {
+    setState(() {
+      _shouldReload = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white, // Set scaffold background color to white
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-          title: Text(
-            getTranslatedText('your_news'),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: Text(
+          getTranslatedText('news'),
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
         ),
-        body: Consumer<NewsViewModel>(
-          builder: (context, viewModel, _) {
-            if (viewModel.isLoading && viewModel.articles.isEmpty) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: Consumer<NewsViewModel>(
+        builder: (context, viewModel, _) {
+          if (viewModel.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (viewModel.articles.isEmpty) {
+            return Center(
+              child: Text(
+                getTranslatedText('no_results_found'),
+                style: const TextStyle(fontSize: 16, color: Colors.black54),
+              ),
+            );
+          }
 
           return RefreshIndicator(
             onRefresh: () => viewModel.fetchNewsArticles(refresh: true, language: _currentLanguage),
@@ -100,14 +132,12 @@ class _NewsScreenState extends State<NewsScreen> {
                           const Center(child: CircularProgressIndicator())
                         else
                           Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: ElevatedButton(
+                            padding: const EdgeInsets.all(30.0),
+                            child: LoadMoreButtonWidget(
                               onPressed: () {
                                 viewModel.fetchMoreArticles(language: _currentLanguage);
                               },
-                              child: Text(
-                                getTranslatedText('load_more'),
-                              ),
+                              buttonText: getTranslatedText('load_more'),
                             ),
                           ),
                         const SizedBox(height: 80),
@@ -132,7 +162,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       article: article,
                       formattedDate: article['formattedDate'],
                       category: article['category'],
-                      isFavorite: false, // Favorites are managed only in FavoritesScreen
+                      isFavorite: false,
                       onFavoriteToggle: () => _onFavoriteToggle(article),
                     ),
                   );
@@ -142,7 +172,10 @@ class _NewsScreenState extends State<NewsScreen> {
           );
         },
       ),
-      bottomNavigationBar: const BottomNavBar(currentIndex: 0),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: 0,
+        onNewsTabTapped: _triggerReload,
+      ),
     );
   }
 
