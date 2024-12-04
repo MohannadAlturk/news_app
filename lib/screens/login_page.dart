@@ -4,7 +4,6 @@ import 'package:news_app/screens/interests_screen.dart';
 import 'package:news_app/services/auth.dart';
 import 'package:news_app/services/language_service.dart';
 import 'package:news_app/widgets/title_widget.dart';
-import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/submit_button_widget.dart';
 import 'package:news_app/screens/register_page.dart';
