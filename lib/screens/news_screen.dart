@@ -115,8 +115,6 @@ class _NewsScreenState extends State<NewsScreen> {
                   }
 
                   final article = viewModel.articles[index];
-                  final formattedDate = viewModel.formatDate(article['publishedAt'], locale: _currentLanguage);
-                  final category = getTranslatedText(article["category"].toString().toLowerCase());
 
                   return GestureDetector(
                     onTap: () {
@@ -131,8 +129,8 @@ class _NewsScreenState extends State<NewsScreen> {
                     },
                     child: NewsCard(
                       article: article,
-                      formattedDate: formattedDate,
-                      category: category,
+                      formattedDate: article['formattedDate'],
+                      category: article['category'],
                       isFavorite: false, // Favorites are managed only in FavoritesScreen
                       onFavoriteToggle: () => _onFavoriteToggle(article),
                     ),

@@ -79,8 +79,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             itemCount: favoriteArticles.length,
             itemBuilder: (context, index) {
               final article = favoriteArticles[index];
-              final formattedDate = article['formattedDate'] ?? '';
-              final category = getTranslatedText(article["category"].toString().toLowerCase());
 
               return GestureDetector(
                 onTap: () {
@@ -95,8 +93,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 },
                 child: NewsCard(
                   article: article,
-                  formattedDate: formattedDate,
-                  category: category,
+                  formattedDate: article["formattedDate"],
+                  category: article["category"],
                   isFavorite: true, // All articles are favorites here
                   onFavoriteToggle: () => _removeFromFavorites(article), // Remove from favorites
                 ),
