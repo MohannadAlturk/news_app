@@ -54,5 +54,6 @@
   "weak_password": "Passwort ist zu schwach.",
   "registration_failed": "Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
   "login_instead": "Bereits ein Konto? Anmelden",
-  "load_more": "Mehr laden"
+  "load_more": "Mehr laden",
+  "invalid-email": "Ungültige E-Mail"
 }

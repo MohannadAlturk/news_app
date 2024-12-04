@@ -35,6 +35,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Future<void> resetPassword() async {
+    setState(() {
+      errorMessage = null;
+      message = null;
+    });
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: _controllerEmail.text);
       setState(() {
@@ -42,7 +46,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       });
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.code ?? e.message;
+        errorMessage = getTranslatedText('invalid-email');
       });
     }
   }
@@ -84,6 +88,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                   MessageWidget(message: message),
                   ErrorMessageWidget(errorMessage: errorMessage),
+                  const SizedBox(height: 10),
                   SubmitButtonWidget(
                     isLogin: false,
                     onPressed: resetPassword,

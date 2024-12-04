@@ -4,7 +4,9 @@ import 'package:news_app/services/language_service.dart';
 import 'package:news_app/widgets/interest_tile.dart';
 
 class InterestsScreen extends StatefulWidget {
-  const InterestsScreen({super.key});
+  final bool isFirstLogin;
+
+  const InterestsScreen({super.key, required this.isFirstLogin});
 
   @override
   _InterestsScreenState createState() => _InterestsScreenState();
@@ -14,6 +16,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   List<String> _selectedInterests = [];
   String _currentLanguage = 'en';
+  bool isNotFirstLogin = true;
 
   final List<Map<String, dynamic>> _interestsOptions = [
     {'title': 'Business', 'icon': Icons.business},
@@ -28,6 +31,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
   @override
   void initState() {
     super.initState();
+    isNotFirstLogin = widget.isFirstLogin;
     _loadUserInterests();
     _loadLanguage();
   }
@@ -75,6 +79,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
           ),
         ),
         centerTitle: true,
+        automaticallyImplyLeading: isNotFirstLogin, //#################################################
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

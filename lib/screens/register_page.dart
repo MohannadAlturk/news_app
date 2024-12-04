@@ -8,7 +8,6 @@ import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/submit_button_widget.dart';
 import 'package:news_app/screens/news_screen.dart';
-
 import '../widgets/language_selector_widget.dart';
 import 'login_page.dart';
 
@@ -44,10 +43,11 @@ class _RegisterPageState extends State<RegisterPage> {
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
-
       final interestsSelected = await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const InterestsScreen()),
+        MaterialPageRoute(
+          builder: (context) => InterestsScreen(isFirstLogin: false),
+        ),
       );
 
       if (interestsSelected == true && mounted) {
@@ -97,13 +97,15 @@ class _RegisterPageState extends State<RegisterPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          TitleWidget(title: getTranslatedText('register')),
+          const SizedBox(height: 20),
           EntryFieldWidget(
-            title: 'Email',
+            title: getTranslatedText('email'),
             controller: _controllerEmail,
           ),
           const SizedBox(height: 10),
           EntryFieldWidget(
-            title: 'Password',
+            title: getTranslatedText('password'),
             controller: _controllerPassword,
             obscureText: true,
           ),

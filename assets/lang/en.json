@@ -54,5 +54,6 @@
   "weak_password": "Password is too weak.",
   "registration_failed": "Registration failed. Please try again.",
   "login_instead": "Already have an account? Log in",
-  "load_more": "Load More"
+  "load_more": "Load More",
+  "invalid-email": "Invalid email"
 }

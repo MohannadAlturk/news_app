@@ -69,7 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () async {
                   final interestsUpdated = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const InterestsScreen()),
+                    MaterialPageRoute(builder: (context) => const InterestsScreen(isFirstLogin: true)),
                   );
 
                   if (interestsUpdated == true) {

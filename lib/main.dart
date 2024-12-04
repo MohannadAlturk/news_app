@@ -77,7 +77,7 @@ class AuthStateWrapper extends StatelessWidget {
               } else if (interestSnapshot.data == true) {
                 return const NewsScreen();
               } else {
-                return const InterestsScreen();
+                return const InterestsScreen(isFirstLogin: true);
               }
             },
           );
