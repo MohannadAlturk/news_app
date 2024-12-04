@@ -60,5 +60,11 @@
   "no_favorites": "No Favorites added yet",
   "added_to_favorites": "Added to Favorites",
   "removed_from_favorites": "Removed from Favorites",
-  "default_error": "Something went wrong! Try again."
+  "default_error": "Something went wrong! Try again.",
+  "news": "News",
+  "favorites": "Favorites",
+  "search": "Search",
+  "search_title": "Search News",
+  "search_query_placeholder": "Enter your query",
+  "no_results_found": "No results were found"
 }

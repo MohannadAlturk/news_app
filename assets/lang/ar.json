@@ -60,5 +60,11 @@
   "no_favorites": "لم تتم إضافة مفضلات بعد",
   "added_to_favorites": "تمت الإضافة إلى المفضلات",
   "removed_from_favorites": "تمت الإزالة من المفضلات",
-  "default_error": "لقد حدث خطأ ما! حاول مرة أخرى"
+  "default_error": "لقد حدث خطأ ما! حاول مرة أخرى",
+  "news": "الأخبار",
+  "favorites": "المفضلة",
+  "search": "بحث",
+  "search_title": "بحث في الأخبار",
+  "search_query_placeholder": "أدخل استفسارك",
+  "no_results_found": "لم يتم العثور على نتائج"
 }

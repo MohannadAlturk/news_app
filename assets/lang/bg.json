@@ -60,5 +60,11 @@
   "no_favorites": "Все още няма добавени любими",
   "added_to_favorites": "Добавено към Любими",
   "removed_from_favorites": "Премахнато от Любими",
-  "default_error": "Имаше проблем! Опитайте отново."
+  "default_error": "Имаше проблем! Опитайте отново.",
+  "news": "Новини",
+  "favorites": "Любими",
+  "search": "Търсене",
+  "search_title": "Търсене на новини",
+  "search_query_placeholder": "Въведете вашето запитване",
+  "no_results_found": "Няма намерени резултати"
 }
