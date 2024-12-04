@@ -55,5 +55,9 @@
   "registration_failed": "فشل التسجيل. حاول مرة اخرى.",
   "login_instead": "لديك حساب بالفعل؟ تسجيل الدخول",
   "load_more": "تحميل المزيد",
-  "invalid-email": "بريد إلكتروني غير صالح"
+  "invalid-email": "بريد إلكتروني غير صالح",
+  "favorites_title": "مفضلاتك",
+  "no_favorites": "لم تتم إضافة مفضلات بعد",
+  "added_to_favorites": "تمت الإضافة إلى المفضلات",
+  "removed_from_favorites": "تمت الإزالة من المفضلات"
 }
