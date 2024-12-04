@@ -94,19 +94,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               ListTile(
                 title: Text(
-                  getTranslatedText('delete_account'),
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                leading: const Icon(Icons.delete, color: Colors.red),
-                onTap: () => _showDeleteAccountDialog(context),
-              ),
-              ListTile(
-                title: Text(
                   getTranslatedText('sign_out'),
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 leading: const Icon(Icons.logout, color: Colors.blue),
                 onTap: () => _showSignOutDialog(context),
+              ),
+              ListTile(
+                title: Text(
+                  getTranslatedText('delete_account'),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                leading: const Icon(Icons.delete, color: Colors.red),
+                onTap: () => _showDeleteAccountDialog(context),
               ),
               const Divider(),
               Padding(
@@ -136,14 +136,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(getTranslatedText('sign_out')),
-        content: Text(getTranslatedText('sign_out_confirmation')),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        title: Text(
+          getTranslatedText('sign_out'),
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        content: Text(
+          getTranslatedText('sign_out_confirmation'),
+          style: const TextStyle(fontSize: 16, color: Colors.black87),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(getTranslatedText('cancel')),
+            child: Text(
+              getTranslatedText('cancel'),
+              style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
           ),
-          TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+            ),
             onPressed: () async {
               await Auth().signOut();
               Navigator.popUntil(context, (route) => route.isFirst);
@@ -152,7 +171,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
-            child: Text(getTranslatedText('sign_out')),
+            child: Text(
+              getTranslatedText('sign_out'),
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -163,14 +185,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(getTranslatedText('delete_account')),
-        content: Text(getTranslatedText('delete_account_confirmation')),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        title: Text(
+          getTranslatedText('delete_account'),
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        content: Text(
+          getTranslatedText('delete_account_confirmation'),
+          style: const TextStyle(fontSize: 16, color: Colors.black87),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(getTranslatedText('cancel')),
+            child: Text(
+              getTranslatedText('cancel'),
+              style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
           ),
-          TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+            ),
             onPressed: () async {
               try {
                 await Auth().deleteUser();
@@ -189,12 +230,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               }
             },
-            child: Text(getTranslatedText('delete')),
+            child: Text(
+              getTranslatedText('delete'),
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
     );
   }
+
 
   String getTranslatedText(String key) {
     return LanguageService.translate(key);
