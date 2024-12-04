@@ -54,5 +54,9 @@
   "weak_password": "Паролата е твърде слаба.",
   "registration_failed": "Регистрацията не бе успешна. Опитайте отново.",
   "login_instead": "Вече имате акаунт? Вход",
-  "load_more": "Зареди още"
+  "load_more": "Зареди още",
+  "favorites_title": "Вашите Любими",
+  "no_favorites": "Все още няма добавени любими",
+  "added_to_favorites": "Добавено към Любими",
+  "removed_from_favorites": "Премахнато от Любими"
 }

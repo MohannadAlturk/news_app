@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/screens/favorites_screen.dart';
 import 'package:news_app/screens/news_screen.dart';
 import 'package:news_app/screens/settings_screen.dart';
 
@@ -16,8 +17,9 @@ class BottomNavBar extends StatelessWidget {
         );
         break;
       case 1:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Bookmarks clicked")),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const FavoritesScreen()),
         );
         break;
       case 2:

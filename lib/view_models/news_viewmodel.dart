@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:news_app/services/language_service.dart';
 import 'dart:math';
 import '../services/translation_service.dart';
 import '/services/news_api_service.dart';
@@ -44,6 +45,11 @@ class NewsViewModel extends ChangeNotifier {
 
     // Shuffle to randomize display order
     articles.shuffle(Random());
+
+    for (int i = 0; i<articles.length; i++){
+      articles[i]["formattedDate"] = formatDate(articles[i]["publishedAt"], locale: language);
+      articles[i]["category"] = LanguageService.translate(articles[i]["category"].toString().toLowerCase());
+    }
 
     // Translate articles if the selected language is not English
     if (language != "en") {

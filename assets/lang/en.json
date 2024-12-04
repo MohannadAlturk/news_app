@@ -54,5 +54,9 @@
   "weak_password": "Password is too weak.",
   "registration_failed": "Registration failed. Please try again.",
   "login_instead": "Already have an account? Log in",
-  "load_more": "Load More"
+  "load_more": "Load More",
+  "favorites_title": "Your Favorites",
+  "no_favorites": "No Favorites added yet",
+  "added_to_favorites": "Added to Favorites",
+  "removed_from_favorites": "Removed from Favorites"
 }
