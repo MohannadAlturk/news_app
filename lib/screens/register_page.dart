@@ -4,11 +4,10 @@ import 'package:news_app/screens/interests_screen.dart';
 import 'package:news_app/services/auth.dart';
 import 'package:news_app/services/language_service.dart';
 import 'package:news_app/widgets/title_widget.dart';
-import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/submit_button_widget.dart';
 import 'package:news_app/screens/news_screen.dart';
-import '../widgets/language_selector_widget.dart';
+import '../widgets/input_field_widget.dart';
 import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -22,19 +21,10 @@ class _RegisterPageState extends State<RegisterPage> {
   String? errorMessage = '';
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
-  String _currentLanguage = 'en';
 
   @override
   void initState() {
     super.initState();
-    _loadLanguage();
-  }
-
-  Future<void> _loadLanguage() async {
-    String languageCode = await LanguageService.getLanguageCode();
-    setState(() {
-      _currentLanguage = languageCode;
-    });
   }
 
   Future<void> _createUser() async {
@@ -46,7 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
       final interestsSelected = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => InterestsScreen(isFirstLogin: true),
+          builder: (context) => const InterestsScreen(isFirstLogin: true),
         ),
       );
 
@@ -91,6 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildForm() {
+    final passwordVisibilityNotifier = ValueNotifier<bool>(true); // Default to obscure
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -99,15 +90,26 @@ class _RegisterPageState extends State<RegisterPage> {
         children: <Widget>[
           TitleWidget(title: getTranslatedText('register')),
           const SizedBox(height: 20),
-          EntryFieldWidget(
-            title: getTranslatedText('email'),
+          InputFieldWidget(
             controller: _controllerEmail,
+            hintText: getTranslatedText('email'),
+            icon: Icons.email,
+            onIconPressed: () {}, // No specific functionality needed
+            onSubmitted: (_) {}, // Optional submit behavior
+            obscureTextNotifier: ValueNotifier<bool>(false), // Email field doesn't require obscure text
           ),
           const SizedBox(height: 10),
-          EntryFieldWidget(
-            title: getTranslatedText('password'),
+          InputFieldWidget(
             controller: _controllerPassword,
-            obscureText: true,
+            hintText: getTranslatedText('password'),
+            icon: passwordVisibilityNotifier.value
+                ? Icons.visibility
+                : Icons.visibility_off,
+            onIconPressed: () {
+              passwordVisibilityNotifier.value = !passwordVisibilityNotifier.value; // Toggle visibility
+            },
+            obscureTextNotifier: passwordVisibilityNotifier, // Pass notifier
+            onSubmitted: (_) {}, // Optional submit behavior
           ),
           const SizedBox(height: 10),
           ErrorMessageWidget(errorMessage: errorMessage),
@@ -123,13 +125,8 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _onLanguageChanged(String newLanguage) {
-    print(_currentLanguage);
-    setState(() {
-      _currentLanguage = newLanguage;
-    });
-    print(_currentLanguage);
-  }
+
+
 
   @override
   Widget build(BuildContext context) {

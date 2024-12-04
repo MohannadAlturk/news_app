@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app/widgets/title_widget.dart';
-import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
 import 'package:news_app/widgets/message_widget.dart';
 import 'package:news_app/services/language_service.dart';
 
+import '../widgets/input_field_widget.dart';
 import '../widgets/submit_button_widget.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -70,9 +70,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 children: <Widget>[
                   TitleWidget(title: getTranslatedText('forgot_password')),
                   const SizedBox(height: 20),
-                  EntryFieldWidget(
-                    title: getTranslatedText('email'),
+                  InputFieldWidget(
                     controller: _controllerEmail,
+                    hintText: getTranslatedText('email'),
+                    icon: Icons.email,
+                    onIconPressed: () {}, // No specific functionality needed
+                    onSubmitted: (_) {}, // Optional submit behavior
+                    obscureTextNotifier: ValueNotifier<bool>(false), // Email field doesn't require obscure text
                   ),
                   MessageWidget(message: message),
                   ErrorMessageWidget(errorMessage: errorMessage),
@@ -101,6 +105,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       ),
     );
   }
+
 
   String getTranslatedText(String key) {
     return LanguageService.translate(key);

@@ -60,5 +60,11 @@
   "no_favorites": "Noch keine Favoriten hinzugefügt",
   "added_to_favorites": "Zu Favoriten hinzugefügt",
   "removed_from_favorites": "Aus Favoriten entfernt",
-  "default_error": "Etwas ist schief gelaufen. Versuchen Sie es erneut."
+  "default_error": "Etwas ist schief gelaufen. Versuchen Sie es erneut.",
+  "news": "Nachrichten",
+  "favorites": "Favoriten",
+  "search": "Suche",
+  "search_title": "Nachrichten-Suche",
+  "search_query_placeholder": "Geben Sie Ihre Suchanfrage ein",
+  "no_results_found": "Keine Ergebnisse gefunden"
 }

@@ -43,8 +43,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        indicatorColor: Colors.blue,
+        progressIndicatorTheme: const ProgressIndicatorThemeData(color: Colors.blue),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Colors.blue,
+          selectionColor: Colors.blueAccent,
+          selectionHandleColor: Colors.blue
+        )
       ),
-      home: AuthStateWrapper(),
+      home: const AuthStateWrapper(),
     );
   }
 }

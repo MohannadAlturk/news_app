@@ -45,6 +45,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   String getTranslatedText(String key) {
+    print(_currentLanguage);
     return LanguageService.translate(key);
   }
 

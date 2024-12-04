@@ -18,42 +18,54 @@ class TextToSpeechBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Consumer<ArticleDetailViewModel>(
-          builder: (context, viewModel, _) {
-            return LinearProgressIndicator(
-              value: viewModel.ttsProgress,
-              backgroundColor: Colors.grey[300],
-              color: Colors.blue,
-            );
-          },
-        ),
-        Consumer<ArticleDetailViewModel>(
-          builder: (context, viewModel, _) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    viewModel.isPlaying && !viewModel.ttsService.isPaused
-                        ? Icons.pause
-                        : Icons.play_arrow,
-                    color: Colors.blue,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0), // Top and bottom spacing
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Consumer<ArticleDetailViewModel>(
+            builder: (context, viewModel, _) {
+              return LinearProgressIndicator(
+                value: viewModel.ttsProgress,
+                backgroundColor: Colors.grey[300],
+                color: Colors.blue,
+                minHeight: 4, // Slim progress bar
+              );
+            },
+          ),
+          const SizedBox(height: 12), // Space between progress bar and controls
+          Consumer<ArticleDetailViewModel>(
+            builder: (context, viewModel, _) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: viewModel.toggleTTS,
+                    icon: Icon(
+                      viewModel.isPlaying && !viewModel.ttsService.isPaused
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      color: Colors.blue,
+                    ),
+                    iconSize: 28, // Standard icon size
                   ),
-                  onPressed: viewModel.toggleTTS,
-                ),
-                Text(
-                  viewModel.isPlaying
-                      ? (viewModel.ttsService.isPaused ? pauseText : playText)
-                      : stopText,
-                  style: const TextStyle(color: Colors.blue),
-                ),
-              ],
-            );
-          },
-        ),
-      ],
+                  const SizedBox(width: 8), // Space between icon and text
+                  Text(
+                    viewModel.isPlaying
+                        ? (viewModel.ttsService.isPaused ? playText : pauseText)
+                        : playText,
+                    style: const TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

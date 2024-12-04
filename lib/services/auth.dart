@@ -17,7 +17,8 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      throw e;
+      print(e);
+      rethrow;
     }
   }
 
@@ -31,7 +32,8 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      throw e;
+      print(e);
+      rethrow;
     }
   }
 
@@ -39,7 +41,8 @@ class Auth {
     try {
       await _firebaseAuth.signOut();
     } on FirebaseAuthException catch (e) {
-      throw e;
+      print(e);
+      rethrow;
     }
   }
 
@@ -63,7 +66,7 @@ class Auth {
           message: 'Please reauthenticate and try again.',
         );
       }
-      throw e;
+      rethrow;
     }
   }
 }

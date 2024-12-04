@@ -7,22 +7,30 @@ import '/services/news_api_service.dart';
 import '/services/firestore_service.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-
 class NewsViewModel extends ChangeNotifier {
   final NewsApiService _newsApiService = NewsApiService();
   final FirestoreService _firestoreService = FirestoreService();
   final TranslationService _translationService = TranslationService();
 
   List<dynamic> _articles = [];
+  final List<dynamic> _queryArticles = [];
+  List<dynamic> _allQueryArticles = []; // Holds all fetched articles for the query
+
   bool _isLoading = true;
   bool _isFetchingMore = false;
   int _currentPage = 1;
 
   List<dynamic> get articles => _articles;
+  List<dynamic> get queryArticles => _queryArticles;
 
   bool get isLoading => _isLoading;
-
   bool get isFetchingMore => _isFetchingMore;
+
+  int _displayedCount = 0; // Keeps track of the number of displayed articles
+  final int _batchSize = 10; // Number of articles to display per batch
+
+  // Getter to check if there are more query articles to load
+  bool get hasMoreQueryArticles => _displayedCount < _allQueryArticles.length;
 
   Future<List<dynamic>> _fetchAndFilterArticles(List<String> interests,
       int page, {String language = 'en'}) async {
@@ -46,7 +54,7 @@ class NewsViewModel extends ChangeNotifier {
     // Shuffle to randomize display order
     articles.shuffle(Random());
 
-    for (int i = 0; i<articles.length; i++){
+    for (int i = 0; i < articles.length; i++) {
       articles[i]["formattedDate"] = formatDate(articles[i]["publishedAt"], locale: language);
       articles[i]["category"] = LanguageService.translate(articles[i]["category"].toString().toLowerCase());
     }
@@ -65,7 +73,6 @@ class NewsViewModel extends ChangeNotifier {
 
     return articles;
   }
-
 
   Future<void> fetchNewsArticles(
       {bool refresh = false, String language = 'en'}) async {
@@ -94,7 +101,6 @@ class NewsViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchMoreArticles({String language = 'en'}) async {
-    // Set _isFetchingMore to true and notify listeners to show loading indicator
     _isFetchingMore = true;
     notifyListeners();
 
@@ -107,19 +113,100 @@ class NewsViewModel extends ChangeNotifier {
       final moreArticles = await _fetchAndFilterArticles(
           interests, _currentPage, language: language);
 
-      // Add translated articles to the main list
       _articles.addAll(moreArticles);
     } catch (error) {
       print('Error fetching more articles: $error');
     } finally {
-      // Set _isFetchingMore to false and notify listeners to hide loading indicator
+      _isFetchingMore = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchArticlesByQuery(String query, {String language = 'en'}) async {
+    _isLoading = true;
+    _displayedCount = 0;
+    _queryArticles.clear();
+    _allQueryArticles.clear();
+    notifyListeners();
+
+    try {
+      final results = await _newsApiService.fetchArticlesByQuery(query);
+
+      // Filter and format articles
+      final validResults = results.where((article) =>
+      article['description'] != null &&
+          article['description'] != 'removed').toList();
+
+      for (int i = 0; i < validResults.length; i++) {
+        validResults[i]["formattedDate"] = formatDate(validResults[i]["publishedAt"], locale: language);
+        validResults[i]["category"] = "";
+      }
+
+      _allQueryArticles = validResults; // Store all filtered and formatted articles
+
+      // Ensure the first batch is loaded before setting isLoading to false
+      await _loadNextBatch(language);
+    } catch (error) {
+      print('Error fetching query articles: $error');
+      _allQueryArticles = [];
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _loadNextBatch(String language) async {
+    if (!hasMoreQueryArticles) {
+      return; // No more articles to display
+    }
+
+    _isFetchingMore = true;
+    notifyListeners();
+
+    try {
+      // Get the next batch of valid articles
+      final nextBatch = _allQueryArticles.skip(_displayedCount).take(_batchSize).toList();
+
+      if (language != 'en') {
+        final translatedBatch = await _translationService.translateArticles(nextBatch, language);
+        if (translatedBatch != null) {
+          for (int i = 0; i < nextBatch.length; i++) {
+            nextBatch[i]['title'] = translatedBatch[i]['title'];
+            nextBatch[i]['description'] = translatedBatch[i]['description'];
+          }
+        }
+      }
+
+      _queryArticles.addAll(nextBatch);
+      _displayedCount += nextBatch.length;
+    } catch (error) {
+      print('Error loading next batch: $error');
+    } finally {
       _isFetchingMore = false;
       notifyListeners();
     }
   }
 
 
-  // Function to format date as "Month Day, Year"
+  void clearQueryArticles() {
+    _queryArticles.clear();
+    _allQueryArticles.clear();
+    _displayedCount = 0;
+    notifyListeners();
+  }
+
+  void clearArticles() {
+    _articles.clear();
+    _isLoading = true; // Ensure loading spinner shows
+    notifyListeners();
+  }
+
+
+  Future<void> fetchMoreArticlesByQuery(String language) async {
+    if (_isFetchingMore) return;
+    await _loadNextBatch(language);
+  }
+
   String formatDate(String? publishedAt, {String locale = 'en'}) {
     if (publishedAt != null) {
       try {

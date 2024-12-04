@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app/services/language_service.dart';
-import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
 import '../widgets/submit_button_widget.dart';
 import '../widgets/title_widget.dart';
+import '../widgets/input_field_widget.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -17,14 +17,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _currentPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   String? errorMessage = '';
-
-  bool _isCurrentPasswordVisible = false;
-  bool _isNewPasswordVisible = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   Future<void> _changePassword() async {
     try {
@@ -58,6 +50,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final passwordVisibilityNotifier = ValueNotifier<bool>(true); // Default to obscure
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -81,36 +75,30 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           children: [
             TitleWidget(title: getTranslatedText('change_password')),
             const SizedBox(height: 20),
-            EntryFieldWidget(
-              title: getTranslatedText('current_password'),
+            InputFieldWidget(
               controller: _currentPasswordController,
-              obscureText: !_isCurrentPasswordVisible,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _isCurrentPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isCurrentPasswordVisible = !_isCurrentPasswordVisible;
-                  });
-                },
-              ),
+              hintText: getTranslatedText('current_password'),
+              icon: passwordVisibilityNotifier.value
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+              onIconPressed: () {
+                passwordVisibilityNotifier.value = !passwordVisibilityNotifier.value; // Toggle visibility
+              },
+              obscureTextNotifier: passwordVisibilityNotifier, // Pass notifier
+              onSubmitted: (_) {}, // Optional submit behavior
             ),
             const SizedBox(height: 10),
-            EntryFieldWidget(
-              title: getTranslatedText('new_password'),
+            InputFieldWidget(
               controller: _newPasswordController,
-              obscureText: !_isNewPasswordVisible,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isNewPasswordVisible = !_isNewPasswordVisible;
-                  });
-                },
-              ),
+              hintText: getTranslatedText('new_password'),
+              icon: passwordVisibilityNotifier.value
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+              onIconPressed: () {
+                passwordVisibilityNotifier.value = !passwordVisibilityNotifier.value; // Toggle visibility
+              },
+              obscureTextNotifier: passwordVisibilityNotifier, // Pass notifier
+              onSubmitted: (_) {}, // Optional submit behavior
             ),
             const SizedBox(height: 10),
             ErrorMessageWidget(errorMessage: errorMessage),
