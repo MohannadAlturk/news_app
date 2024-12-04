@@ -16,7 +16,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   List<String> _selectedInterests = [];
   String _currentLanguage = 'en';
-  bool isNotFirstLogin = true;
+  bool isFirstLogin = false;
 
   final List<Map<String, dynamic>> _interestsOptions = [
     {'title': 'Business', 'icon': Icons.business},
@@ -31,7 +31,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
   @override
   void initState() {
     super.initState();
-    isNotFirstLogin = widget.isFirstLogin;
+    isFirstLogin = widget.isFirstLogin;
     _loadUserInterests();
     _loadLanguage();
   }
@@ -69,6 +69,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.blue,
         title: Text(
           getTranslatedText('select_your_interests'),
@@ -79,7 +80,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
           ),
         ),
         centerTitle: true,
-        automaticallyImplyLeading: isNotFirstLogin, //#################################################
+        automaticallyImplyLeading: !isFirstLogin,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

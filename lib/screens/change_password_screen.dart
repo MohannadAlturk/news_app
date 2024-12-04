@@ -4,6 +4,9 @@ import 'package:news_app/services/language_service.dart';
 import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
 
+import '../widgets/submit_button_widget.dart';
+import '../widgets/title_widget.dart';
+
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
 
@@ -55,14 +58,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(getTranslatedText('change_password')),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          getTranslatedText('change_password'),
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
         backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            TitleWidget(title: getTranslatedText('change_password')),
+            const SizedBox(height: 20),
             EntryFieldWidget(
               title: getTranslatedText('current_password'),
               controller: _currentPasswordController,
@@ -76,9 +91,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             const SizedBox(height: 10),
             ErrorMessageWidget(errorMessage: errorMessage),
-            ElevatedButton(
+            SubmitButtonWidget(
+              isLogin: true,
               onPressed: _changePassword,
-              child: Text(getTranslatedText('change_password_button')),
+              loginText: getTranslatedText('change_password_button'),
+              registerText: getTranslatedText('register'),
             ),
           ],
         ),

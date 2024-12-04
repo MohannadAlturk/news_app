@@ -46,7 +46,7 @@ class _RegisterPageState extends State<RegisterPage> {
       final interestsSelected = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => InterestsScreen(isFirstLogin: false),
+          builder: (context) => InterestsScreen(isFirstLogin: true),
         ),
       );
 

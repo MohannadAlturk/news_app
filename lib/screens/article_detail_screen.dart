@@ -61,6 +61,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       ],
       child: Scaffold(
         appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
           title: Text(
             getTranslatedText('your_news'),
             style: const TextStyle(
@@ -71,6 +72,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           ),
           centerTitle: true,
           backgroundColor: Colors.blue,
+
         ),
         body: Container(
           color: Colors.white,
