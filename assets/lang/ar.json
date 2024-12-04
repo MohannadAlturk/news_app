@@ -59,5 +59,6 @@
   "favorites_title": "مفضلاتك",
   "no_favorites": "لم تتم إضافة مفضلات بعد",
   "added_to_favorites": "تمت الإضافة إلى المفضلات",
-  "removed_from_favorites": "تمت الإزالة من المفضلات"
+  "removed_from_favorites": "تمت الإزالة من المفضلات",
+  "default_error": "لقد حدث خطأ ما! حاول مرة أخرى"
 }

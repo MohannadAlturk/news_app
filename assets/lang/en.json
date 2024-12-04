@@ -59,5 +59,6 @@
   "favorites_title": "Your Favorites",
   "no_favorites": "No Favorites added yet",
   "added_to_favorites": "Added to Favorites",
-  "removed_from_favorites": "Removed from Favorites"
+  "removed_from_favorites": "Removed from Favorites",
+  "default_error": "Something went wrong! Try again."
 }

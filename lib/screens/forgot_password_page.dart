@@ -46,6 +46,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       });
     } on FirebaseAuthException catch (e) {
       setState(() {
+        print(e);
         errorMessage = getTranslatedText('invalid-email');
       });
     }
@@ -101,7 +102,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       Navigator.pop(context);
                     },
                     child: Text(
-                      getTranslatedText('cancel'),
+                      getTranslatedText('login'),
                       style: const TextStyle(color: Colors.blue),
                     ),
                   ),

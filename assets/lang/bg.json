@@ -59,5 +59,6 @@
   "favorites_title": "Вашите Любими",
   "no_favorites": "Все още няма добавени любими",
   "added_to_favorites": "Добавено към Любими",
-  "removed_from_favorites": "Премахнато от Любими"
+  "removed_from_favorites": "Премахнато от Любими",
+  "default_error": "Имаше проблем! Опитайте отново."
 }

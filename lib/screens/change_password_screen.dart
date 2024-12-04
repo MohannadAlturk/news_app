@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app/services/language_service.dart';
 import 'package:news_app/widgets/entry_field_widget.dart';
 import 'package:news_app/widgets/error_message_widget.dart';
-
 import '../widgets/submit_button_widget.dart';
 import '../widgets/title_widget.dart';
 
@@ -19,6 +18,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   String? errorMessage = '';
   String _currentLanguage = 'en';
+
+  bool _isCurrentPasswordVisible = false;
+  bool _isNewPasswordVisible = false;
 
   @override
   void initState() {
@@ -49,7 +51,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.message;
+        switch (e.code) {
+          case 'invalid-credential':
+            errorMessage = getTranslatedText('incorrect_password');
+            break;
+          case 'weak-password':
+            errorMessage = getTranslatedText('weak_password');
+            break;
+          default:
+            errorMessage = getTranslatedText('default_error');
+        }
       });
     }
   }
@@ -57,8 +68,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           getTranslatedText('change_password'),
           style: const TextStyle(
@@ -81,13 +93,33 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             EntryFieldWidget(
               title: getTranslatedText('current_password'),
               controller: _currentPasswordController,
-              obscureText: true,
+              obscureText: !_isCurrentPasswordVisible,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isCurrentPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isCurrentPasswordVisible = !_isCurrentPasswordVisible;
+                  });
+                },
+              ),
             ),
             const SizedBox(height: 10),
             EntryFieldWidget(
               title: getTranslatedText('new_password'),
               controller: _newPasswordController,
-              obscureText: true,
+              obscureText: !_isNewPasswordVisible,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isNewPasswordVisible = !_isNewPasswordVisible;
+                  });
+                },
+              ),
             ),
             const SizedBox(height: 10),
             ErrorMessageWidget(errorMessage: errorMessage),
