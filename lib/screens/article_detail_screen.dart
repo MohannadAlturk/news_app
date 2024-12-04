@@ -62,9 +62,14 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.article['title'],
-            style: const TextStyle(color: Colors.white),
+            getTranslatedText('your_news'),
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
+          centerTitle: true,
           backgroundColor: Colors.blue,
         ),
         body: Container(
