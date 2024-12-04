@@ -84,11 +84,11 @@ class _FullArticleWebViewState extends State<FullArticleWebView> {
               onConsoleMessage: (controller, consoleMessage) {
                 print("Console message: ${consoleMessage.message}");
               },
-              onLoadError: (controller, url, code, message) {
-                setState(() {
-                  _hasError = true;
-                });
-              },
+                onReceivedError: (controller, request, error) {
+                  setState(() {
+                    _hasError = true;
+                  });
+              }
             ),
           if (_progress < 1.0)
             LinearProgressIndicator(value: _progress),
