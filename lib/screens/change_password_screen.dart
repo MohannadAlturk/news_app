@@ -17,7 +17,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _currentPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   String? errorMessage = '';
-  String _currentLanguage = 'en';
 
   bool _isCurrentPasswordVisible = false;
   bool _isNewPasswordVisible = false;
@@ -25,14 +24,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   void initState() {
     super.initState();
-    _loadLanguage();
-  }
-
-  Future<void> _loadLanguage() async {
-    String languageCode = await LanguageService.getLanguageCode();
-    setState(() {
-      _currentLanguage = languageCode;
-    });
   }
 
   Future<void> _changePassword() async {
