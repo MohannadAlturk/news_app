@@ -19,20 +19,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   String? errorMessage = '';
   String? message = '';
   final TextEditingController _controllerEmail = TextEditingController();
-  String _currentLanguage = 'en';
 
   @override
   void initState() {
     super.initState();
-    _loadLanguage();
   }
 
-  Future<void> _loadLanguage() async {
-    String languageCode = await LanguageService.getLanguageCode();
-    setState(() {
-      _currentLanguage = languageCode;
-    });
-  }
 
   Future<void> resetPassword() async {
     setState(() {
@@ -52,11 +44,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     }
   }
 
-  void _onLanguageChanged(String newLanguage) {
-    setState(() {
-      _currentLanguage = newLanguage;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
