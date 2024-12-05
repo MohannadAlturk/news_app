@@ -50,6 +50,12 @@ class _NewsScreenState extends State<NewsScreen> {
     final viewModel = Provider.of<NewsViewModel>(context, listen: false);
     viewModel.clearArticles(); // Clear current articles
     await viewModel.fetchNewsArticles(language: _currentLanguage);
+
+    // Check for errors after fetching articles
+    if (viewModel.errorMessage != null) {
+      _showSnackbar(viewModel.errorMessage!);
+      viewModel.clearErrorMessage();
+    }
   }
 
   Future<void> _onFavoriteToggle(Map<String, dynamic> article) async {
