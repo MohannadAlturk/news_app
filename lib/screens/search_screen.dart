@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/input_field_widget.dart';
+import '../widgets/load_more_button_widget.dart';
 import '/view_models/news_viewmodel.dart';
 import '/widgets/news_card.dart';
 import '/widgets/bottom_navbar.dart';
@@ -62,11 +63,16 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  void _performSearch(NewsViewModel viewModel, String query) {
+  Future<void> _performSearch(NewsViewModel viewModel, String query) async {
     // Clear previous results
     viewModel.clearQueryArticles();
     _searchController.clear();
-    viewModel.fetchArticlesByQuery(query, language: _currentLanguage);
+    await viewModel.fetchArticlesByQuery(query, language: _currentLanguage);
+    // Show a SnackBar if there's an error
+    if (viewModel.errorMessage != null) {
+      _showSnackbar(viewModel.errorMessage!);
+      viewModel.clearErrorMessage();
+    }
   }
 
   @override
@@ -133,15 +139,13 @@ class _SearchScreenState extends State<SearchScreen> {
                             else if (viewModel.hasMoreQueryArticles)
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: ElevatedButton(
+                                child: LoadMoreButtonWidget(
                                   onPressed: () {
                                     viewModel.fetchMoreArticlesByQuery(
                                       _currentLanguage,
                                     );
                                   },
-                                  child: Text(
-                                    LanguageService.translate('load_more'),
-                                  ),
+                                    buttonText: getTranslatedText('load_more')
                                 ),
                               ),
                             const SizedBox(height: 80),
@@ -178,7 +182,7 @@ class _SearchScreenState extends State<SearchScreen> {
           );
         },
       ),
-      bottomNavigationBar: const BottomNavBar(currentIndex: 3),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 2),
     );
   }
 

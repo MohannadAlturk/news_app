@@ -20,6 +20,13 @@ class NewsViewModel extends ChangeNotifier {
   bool _isFetchingMore = false;
   int _currentPage = 1;
 
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+  void clearErrorMessage() {
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   List<dynamic> get articles => _articles;
   List<dynamic> get queryArticles => _queryArticles;
 
@@ -32,8 +39,9 @@ class NewsViewModel extends ChangeNotifier {
   // Getter to check if there are more query articles to load
   bool get hasMoreQueryArticles => _displayedCount < _allQueryArticles.length;
 
-  Future<List<dynamic>> _fetchAndFilterArticles(List<String> interests,
-      int page, {String language = 'en'}) async {
+  Future<List<dynamic>> _fetchAndFilterArticles(
+      List<String> interests, int page,
+      {String language = 'en'}) async {
     List<dynamic> articles = [];
 
     for (String category in interests) {
@@ -46,8 +54,7 @@ class NewsViewModel extends ChangeNotifier {
             article['publishedAt'] != null &&
             article['title'].isNotEmpty &&
             !article['title'].toLowerCase().contains('removed') &&
-            article["description"] != null
-        ).toList(),
+            article["description"] != null).toList(),
       );
     }
 
@@ -55,18 +62,35 @@ class NewsViewModel extends ChangeNotifier {
     articles.shuffle(Random());
 
     for (int i = 0; i < articles.length; i++) {
-      articles[i]["formattedDate"] = formatDate(articles[i]["publishedAt"], locale: language);
-      articles[i]["category"] = LanguageService.translate(articles[i]["category"].toString().toLowerCase());
+      articles[i]["formattedDate"] =
+          formatDate(articles[i]["publishedAt"], locale: language);
+      articles[i]["category"] = LanguageService.translate(
+          articles[i]["category"].toString().toLowerCase());
     }
 
     // Translate articles if the selected language is not English
     if (language != "en") {
-      final translatedArticles = await _translationService.translateArticles(
-          articles, language);
-      if (translatedArticles != null) {
-        for (int i = 0; i < articles.length; i++) {
-          articles[i]['title'] = translatedArticles[i]['title'];
-          articles[i]['description'] = translatedArticles[i]['description'];
+      int maxAttempts = 2;
+      int attempt = 0;
+      bool success = false;
+
+      while (attempt < maxAttempts && !success) {
+        attempt++;
+        try {
+          final translatedArticles =
+          await _translationService.translateArticles(articles, language);
+
+          if (translatedArticles != null) {
+            for (int i = 0; i < articles.length; i++) {
+              articles[i]['title'] = translatedArticles[i]['title'];
+              articles[i]['description'] = translatedArticles[i]['description'];
+            }
+            success = true;
+          }
+        } catch (e) {
+          if (attempt == maxAttempts) {
+            _errorMessage = LanguageService.translate("translation_error");
+          }
         }
       }
     }
@@ -134,8 +158,9 @@ class NewsViewModel extends ChangeNotifier {
 
       // Filter and format articles
       final validResults = results.where((article) =>
-      article['description'] != null &&
-          article['description'] != 'removed').toList();
+      article['title'].isNotEmpty &&
+          !article['title'].toLowerCase().contains('removed') &&
+          article["description"] != null).toList();
 
       for (int i = 0; i < validResults.length; i++) {
         validResults[i]["formattedDate"] = formatDate(validResults[i]["publishedAt"], locale: language);
@@ -148,6 +173,7 @@ class NewsViewModel extends ChangeNotifier {
       await _loadNextBatch(language);
     } catch (error) {
       print('Error fetching query articles: $error');
+      _errorMessage = LanguageService.translate("translation_error");
       _allQueryArticles = [];
     } finally {
       _isLoading = false;
@@ -168,11 +194,25 @@ class NewsViewModel extends ChangeNotifier {
       final nextBatch = _allQueryArticles.skip(_displayedCount).take(_batchSize).toList();
 
       if (language != 'en') {
-        final translatedBatch = await _translationService.translateArticles(nextBatch, language);
-        if (translatedBatch != null) {
-          for (int i = 0; i < nextBatch.length; i++) {
-            nextBatch[i]['title'] = translatedBatch[i]['title'];
-            nextBatch[i]['description'] = translatedBatch[i]['description'];
+        int maxAttempts = 2;
+        int attempt = 0;
+        bool success = false;
+
+        while (attempt < maxAttempts && !success) {
+          attempt++;
+          try {
+            final translatedBatch = await _translationService.translateArticles(nextBatch, language);
+            if (translatedBatch != null) {
+              for (int i = 0; i < nextBatch.length; i++) {
+                nextBatch[i]['title'] = translatedBatch[i]['title'];
+                nextBatch[i]['description'] = translatedBatch[i]['description'];
+              }
+              success = true;
+            }
+          } catch (error) {
+            if (attempt == maxAttempts) {
+              _errorMessage = LanguageService.translate("translation_error");
+            }
           }
         }
       }
@@ -180,13 +220,12 @@ class NewsViewModel extends ChangeNotifier {
       _queryArticles.addAll(nextBatch);
       _displayedCount += nextBatch.length;
     } catch (error) {
-      print('Error loading next batch: $error');
+      _errorMessage = LanguageService.translate("translation_error");
     } finally {
       _isFetchingMore = false;
       notifyListeners();
     }
   }
-
 
   void clearQueryArticles() {
     _queryArticles.clear();
