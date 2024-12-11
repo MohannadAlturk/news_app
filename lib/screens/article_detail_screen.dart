@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/text_to_speech_service.dart';
 import '../view_models/article_detail_viewmodel.dart';
 import '../widgets/bottom_navbar.dart';
 import '../widgets/text_to_speech_bar.dart';
-import 'full_article_webview.dart';
 import 'package:news_app/services/language_service.dart';
 import 'dart:ui' as ui;
 
@@ -61,7 +61,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.white),
+          iconTheme: const IconThemeData(color: Colors.white),
           title: Text(
             getTranslatedText('your_news'),
             style: const TextStyle(
@@ -151,16 +151,15 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    FullArticleWebView(
-                                      articleUrl: widget.article['url'],
-                                    ),
-                              ),
-                            );
+                          onPressed: () async {
+                            final Uri url = Uri.parse(widget.article['url']);
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(getTranslatedText('failed_to_open_browser'))),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue),

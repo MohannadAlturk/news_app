@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app/screens/interests_screen.dart';
@@ -12,6 +15,7 @@ import 'package:news_app/widgets/language_selector_widget.dart';
 
 import '../services/firestore_service.dart';
 import '../widgets/input_field_widget.dart';
+import '../widgets/no_connection_widget.dart';
 import 'news_screen.dart';
 
 class LoginPage extends StatefulWidget {
@@ -26,19 +30,85 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
   String _currentLanguage = 'en';
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  bool _isDialogShowing = false; // Tracks if the dialog is currently being shown
+  ConnectivityResult _currentStatus = ConnectivityResult.none; // Tracks the current status
 
   @override
   void initState() {
     super.initState();
     _loadLanguage();
+    _initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_handleConnectivityChange);
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
   }
 
   Future<void> _loadLanguage() async {
     String languageCode = await LanguageService.getLanguageCode();
     await LanguageService.loadLanguage(languageCode);
-    print(_currentLanguage);
     setState(() {
       _currentLanguage = languageCode;
+    });
+  }
+
+  Future<void> _initConnectivity() async {
+    try {
+      final result = await _connectivity.checkConnectivity();
+      debugPrint("Initial connectivity: $result");
+      _handleConnectivityChange(result); // Handle initial connectivity
+    } catch (e) {
+      debugPrint("Error checking connectivity: $e");
+    }
+  }
+
+  void _handleConnectivityChange(List<ConnectivityResult> result) {
+    if (result[0] == ConnectivityResult.none) {
+      _showNoConnectionDialog(); // Show dialog on no connectivity
+    } else if (_isDialogShowing) {
+      Navigator.pop(context); // Close dialog if connectivity is restored
+      _isDialogShowing = false; // Reset the flag
+    }
+    if (result[0] == _currentStatus) {
+      // No change in connectivity
+      return;
+    }
+    _currentStatus = result[0]; // Update the current status
+  }
+
+  void _showNoConnectionDialog() {
+    if (_isDialogShowing) return;
+
+    _isDialogShowing = true; // Lock dialog state
+    debugPrint("Showing NoConnectionDialog.");
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return NoConnectionDialog(
+          onRetry: () async {
+            debugPrint("Retry pressed. Checking connectivity...");
+            final result = await _connectivity.checkConnectivity();
+            if (result[0] != ConnectivityResult.none) {
+              debugPrint("Connection restored. Dismissing dialog.");
+              Navigator.pop(context); // Close the dialog
+              _isDialogShowing = false; // Reset the flag
+            } else {
+              debugPrint("Still no connection. Keeping dialog open.");
+            }
+          },
+        );
+      },
+    ).whenComplete(() {
+      debugPrint("Dialog dismissed. Resetting _isDialogShowing.");
+      _isDialogShowing = false; // Ensure flag is reset after dismissal
     });
   }
 
@@ -61,7 +131,8 @@ class _LoginPageState extends State<LoginPage> {
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const InterestsScreen(isFirstLogin: false)),
+            MaterialPageRoute(
+                builder: (context) => const InterestsScreen(isFirstLogin: false)),
           );
         }
       }
@@ -84,38 +155,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Widget _buildForgotPasswordButton() {
-    return TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-        );
-      },
-      child: Text(
-        getTranslatedText('forgot_password'),
-        style: const TextStyle(color: Colors.blue),
-      ),
-    );
-  }
-
-  Widget _buildRegisterInsteadButton() {
-    return TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const RegisterPage()),
-        );
-      },
-      child: Text(
-        getTranslatedText('register_instead'),
-        style: const TextStyle(color: Colors.blue),
-      ),
-    );
-  }
-
   Widget _buildForm() {
-    final passwordVisibilityNotifier = ValueNotifier<bool>(true); // Default to obscure
+    final passwordVisibilityNotifier = ValueNotifier<bool>(true);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -128,9 +169,9 @@ class _LoginPageState extends State<LoginPage> {
             controller: _controllerEmail,
             hintText: getTranslatedText('email'),
             icon: Icons.email,
-            onIconPressed: () {}, // No specific functionality needed
-            onSubmitted: (_) {}, // Optional submit behavior
-            obscureTextNotifier: ValueNotifier<bool>(false), // Email field doesn't require obscure text
+            onIconPressed: () {},
+            onSubmitted: (_) {},
+            obscureTextNotifier: ValueNotifier<bool>(false),
           ),
           const SizedBox(height: 10),
           InputFieldWidget(
@@ -140,10 +181,11 @@ class _LoginPageState extends State<LoginPage> {
                 ? Icons.visibility
                 : Icons.visibility_off,
             onIconPressed: () {
-              passwordVisibilityNotifier.value = !passwordVisibilityNotifier.value; // Toggle visibility
+              passwordVisibilityNotifier.value =
+              !passwordVisibilityNotifier.value;
             },
-            obscureTextNotifier: passwordVisibilityNotifier, // Pass notifier
-            onSubmitted: (_) {}, // Optional submit behavior
+            obscureTextNotifier: passwordVisibilityNotifier,
+            onSubmitted: (_) {},
           ),
           const SizedBox(height: 10),
           ErrorMessageWidget(errorMessage: errorMessage),
@@ -153,18 +195,33 @@ class _LoginPageState extends State<LoginPage> {
             loginText: getTranslatedText('login'),
             registerText: getTranslatedText('register'),
           ),
-          _buildForgotPasswordButton(),
-          _buildRegisterInsteadButton(),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+              );
+            },
+            child: Text(
+              getTranslatedText('forgot_password'),
+              style: const TextStyle(color: Colors.blue),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RegisterPage()),
+              );
+            },
+            child: Text(
+              getTranslatedText('register_instead'),
+              style: const TextStyle(color: Colors.blue),
+            ),
+          ),
         ],
       ),
     );
-  }
-
-  void _onLanguageChanged(String newLanguage) async {
-    await LanguageService.loadLanguage(newLanguage);
-    setState(() {
-      _currentLanguage = newLanguage;
-    });
   }
 
   @override
@@ -192,8 +249,13 @@ class _LoginPageState extends State<LoginPage> {
               bottom: 16,
               right: 16,
               child: LanguageSelectorWidget(
-                onLanguageChanged: _onLanguageChanged,
-                currentLanguage: LanguageService.getLanguageCode(),
+                onLanguageChanged: (newLanguage) async {
+                  await LanguageService.loadLanguage(newLanguage);
+                  setState(() {
+                    _currentLanguage = newLanguage;
+                  });
+                },
+                currentLanguage: _currentLanguage,
               ),
             ),
           ],

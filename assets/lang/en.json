@@ -67,5 +67,10 @@
   "search_title": "Search News",
   "search_query_placeholder": "Enter your query",
   "no_results_found": "No results were found",
-  "translation_error": "Something went wrong when translating the articles!"
+  "translation_error": "Something went wrong when translating the articles!",
+  "open_in_browser" : "Open in browser",
+  "failed_to_open_browser": "Failed to open in browser. Try again!",
+  "no_internet": "No Internet Connection",
+  "internet_required": "This app requires an active internet connection to function.",
+  "retry": "Retry"
 }
