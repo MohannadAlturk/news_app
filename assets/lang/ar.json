@@ -67,5 +67,11 @@
   "search_title": "بحث في الأخبار",
   "search_query_placeholder": "أدخل استفسارك",
   "no_results_found": "لم يتم العثور على نتائج",
-  "translation_error": "حدث خطأ أثناء ترجمة المقالات!"
+  "translation_error": "حدث خطأ أثناء ترجمة المقالات!",
+  "open_in_browser" : "فتح في المتصفح",
+  "failed_to_open_browser": "فشل في الفتح في المتصفح. حاول مرة أخرى!",
+  "no_internet": "لا يوجد اتصال بالإنترنت",
+  "internet_required": "يتطلب هذا التطبيق اتصالاً نشطاً بالإنترنت.",
+  "retry": "إعادة المحاولة"
+
 }

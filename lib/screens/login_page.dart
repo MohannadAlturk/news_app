@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app/screens/interests_screen.dart';
@@ -33,10 +35,14 @@ class _LoginPageState extends State<LoginPage> {
     _loadLanguage();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _loadLanguage() async {
     String languageCode = await LanguageService.getLanguageCode();
     await LanguageService.loadLanguage(languageCode);
-    print(_currentLanguage);
     setState(() {
       _currentLanguage = languageCode;
     });
@@ -61,7 +67,8 @@ class _LoginPageState extends State<LoginPage> {
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const InterestsScreen(isFirstLogin: false)),
+            MaterialPageRoute(
+                builder: (context) => const InterestsScreen(isFirstLogin: false)),
           );
         }
       }
@@ -84,38 +91,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Widget _buildForgotPasswordButton() {
-    return TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-        );
-      },
-      child: Text(
-        getTranslatedText('forgot_password'),
-        style: const TextStyle(color: Colors.blue),
-      ),
-    );
-  }
-
-  Widget _buildRegisterInsteadButton() {
-    return TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const RegisterPage()),
-        );
-      },
-      child: Text(
-        getTranslatedText('register_instead'),
-        style: const TextStyle(color: Colors.blue),
-      ),
-    );
-  }
-
   Widget _buildForm() {
-    final passwordVisibilityNotifier = ValueNotifier<bool>(true); // Default to obscure
+    final passwordVisibilityNotifier = ValueNotifier<bool>(true);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -128,9 +105,9 @@ class _LoginPageState extends State<LoginPage> {
             controller: _controllerEmail,
             hintText: getTranslatedText('email'),
             icon: Icons.email,
-            onIconPressed: () {}, // No specific functionality needed
-            onSubmitted: (_) {}, // Optional submit behavior
-            obscureTextNotifier: ValueNotifier<bool>(false), // Email field doesn't require obscure text
+            onIconPressed: () {},
+            onSubmitted: (_) {},
+            obscureTextNotifier: ValueNotifier<bool>(false),
           ),
           const SizedBox(height: 10),
           InputFieldWidget(
@@ -140,10 +117,11 @@ class _LoginPageState extends State<LoginPage> {
                 ? Icons.visibility
                 : Icons.visibility_off,
             onIconPressed: () {
-              passwordVisibilityNotifier.value = !passwordVisibilityNotifier.value; // Toggle visibility
+              passwordVisibilityNotifier.value =
+              !passwordVisibilityNotifier.value;
             },
-            obscureTextNotifier: passwordVisibilityNotifier, // Pass notifier
-            onSubmitted: (_) {}, // Optional submit behavior
+            obscureTextNotifier: passwordVisibilityNotifier,
+            onSubmitted: (_) {},
           ),
           const SizedBox(height: 10),
           ErrorMessageWidget(errorMessage: errorMessage),
@@ -153,18 +131,33 @@ class _LoginPageState extends State<LoginPage> {
             loginText: getTranslatedText('login'),
             registerText: getTranslatedText('register'),
           ),
-          _buildForgotPasswordButton(),
-          _buildRegisterInsteadButton(),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+              );
+            },
+            child: Text(
+              getTranslatedText('forgot_password'),
+              style: const TextStyle(color: Colors.blue),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RegisterPage()),
+              );
+            },
+            child: Text(
+              getTranslatedText('register_instead'),
+              style: const TextStyle(color: Colors.blue),
+            ),
+          ),
         ],
       ),
     );
-  }
-
-  void _onLanguageChanged(String newLanguage) async {
-    await LanguageService.loadLanguage(newLanguage);
-    setState(() {
-      _currentLanguage = newLanguage;
-    });
   }
 
   @override
@@ -192,8 +185,13 @@ class _LoginPageState extends State<LoginPage> {
               bottom: 16,
               right: 16,
               child: LanguageSelectorWidget(
-                onLanguageChanged: _onLanguageChanged,
-                currentLanguage: LanguageService.getLanguageCode(),
+                onLanguageChanged: (newLanguage) async {
+                  await LanguageService.loadLanguage(newLanguage);
+                  setState(() {
+                    _currentLanguage = newLanguage;
+                  });
+                },
+                currentLanguage: _currentLanguage,
               ),
             ),
           ],

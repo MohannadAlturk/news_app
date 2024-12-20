@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/load_more_button_widget.dart';
@@ -34,6 +36,11 @@ class _NewsScreenState extends State<NewsScreen> {
       _reloadArticles();
       _shouldReload = false;
     }
+  }
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadLanguage() async {
@@ -76,12 +83,6 @@ class _NewsScreenState extends State<NewsScreen> {
         duration: const Duration(seconds: 2),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 
   void _triggerReload() {

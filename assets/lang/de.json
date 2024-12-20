@@ -67,5 +67,10 @@
   "search_title": "Nachrichten-Suche",
   "search_query_placeholder": "Geben Sie Ihre Suchanfrage ein",
   "no_results_found": "Keine Ergebnisse gefunden",
-  "translation_error": "Beim Übersetzen der Artikel ist etwas schiefgelaufen!"
+  "translation_error": "Beim Übersetzen der Artikel ist etwas schiefgelaufen!",
+  "open_in_browser" : "Im Browser öffnen",
+  "failed_to_open_browser": "Fehler beim Öffnen im Browser. Bitte versuchen Sie es erneut!",
+  "no_internet": "Keine Internetverbindung",
+  "internet_required": "Diese App erfordert eine aktive Internetverbindung.",
+  "retry": "Erneut versuchen"
 }

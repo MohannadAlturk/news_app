@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app/widgets/title_widget.dart';
@@ -25,6 +27,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   Future<void> resetPassword() async {
     setState(() {
