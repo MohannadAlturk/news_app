@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app/screens/interests_screen.dart';
@@ -15,7 +14,6 @@ import 'package:news_app/widgets/language_selector_widget.dart';
 
 import '../services/firestore_service.dart';
 import '../widgets/input_field_widget.dart';
-import '../widgets/no_connection_widget.dart';
 import 'news_screen.dart';
 
 class LoginPage extends StatefulWidget {
@@ -30,23 +28,15 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
   String _currentLanguage = 'en';
-  final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
-  bool _isDialogShowing = false; // Tracks if the dialog is currently being shown
-  ConnectivityResult _currentStatus = ConnectivityResult.none; // Tracks the current status
 
   @override
   void initState() {
     super.initState();
     _loadLanguage();
-    _initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_handleConnectivityChange);
   }
 
   @override
   void dispose() {
-    _connectivitySubscription.cancel();
     super.dispose();
   }
 
@@ -55,60 +45,6 @@ class _LoginPageState extends State<LoginPage> {
     await LanguageService.loadLanguage(languageCode);
     setState(() {
       _currentLanguage = languageCode;
-    });
-  }
-
-  Future<void> _initConnectivity() async {
-    try {
-      final result = await _connectivity.checkConnectivity();
-      debugPrint("Initial connectivity: $result");
-      _handleConnectivityChange(result); // Handle initial connectivity
-    } catch (e) {
-      debugPrint("Error checking connectivity: $e");
-    }
-  }
-
-  void _handleConnectivityChange(List<ConnectivityResult> result) {
-    if (result[0] == ConnectivityResult.none) {
-      _showNoConnectionDialog(); // Show dialog on no connectivity
-    } else if (_isDialogShowing) {
-      Navigator.pop(context); // Close dialog if connectivity is restored
-      _isDialogShowing = false; // Reset the flag
-    }
-    if (result[0] == _currentStatus) {
-      // No change in connectivity
-      return;
-    }
-    _currentStatus = result[0]; // Update the current status
-  }
-
-  void _showNoConnectionDialog() {
-    if (_isDialogShowing) return;
-
-    _isDialogShowing = true; // Lock dialog state
-    debugPrint("Showing NoConnectionDialog.");
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return NoConnectionDialog(
-          onRetry: () async {
-            debugPrint("Retry pressed. Checking connectivity...");
-            final result = await _connectivity.checkConnectivity();
-            if (result[0] != ConnectivityResult.none) {
-              debugPrint("Connection restored. Dismissing dialog.");
-              Navigator.pop(context); // Close the dialog
-              _isDialogShowing = false; // Reset the flag
-            } else {
-              debugPrint("Still no connection. Keeping dialog open.");
-            }
-          },
-        );
-      },
-    ).whenComplete(() {
-      debugPrint("Dialog dismissed. Resetting _isDialogShowing.");
-      _isDialogShowing = false; // Ensure flag is reset after dismissal
     });
   }
 
