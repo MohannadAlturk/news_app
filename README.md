@@ -1,4 +1,4 @@
-# NEWS AI - Nachrichten-Tool
+# NEWS APP - Nachrichten-Tool
 
 ## Übersicht
 
